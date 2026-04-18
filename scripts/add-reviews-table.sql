@@ -1,0 +1,13 @@
+-- إضافة جدول تعليقات الطلاب (تشغيله في Neon SQL Editor إذا الجدول غير موجود)
+CREATE TABLE IF NOT EXISTS "Review" (
+  id             TEXT PRIMARY KEY,
+  text           TEXT NOT NULL,
+  author_name    TEXT NOT NULL,
+  author_title   TEXT,
+  avatar_letter  TEXT,
+  "order"        INT NOT NULL DEFAULT 0,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS "Review_order_idx" ON "Review"("order");
