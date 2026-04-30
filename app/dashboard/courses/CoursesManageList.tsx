@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { Fragment, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -15,7 +15,40 @@ type CourseRow = {
   lessonsCount: number;
   enrollmentsCount: number;
   category: { id: string; name: string; nameAr?: string | null } | null;
+  subcategory?: { id: string; name: string; nameAr?: string | null } | null;
+  subcategoryPath?: string | null;
+  subcategoryDepth?: number;
 };
+
+type SubCategoryMeta = { id: string; parentId: string | null; label: string; categoryId: string };
+
+function SubCategoryDividerRow({ title, depth = 0 }: { title: string; depth?: number }) {
+  return (
+    <tr>
+      <td colSpan={6} className="p-0">
+        <div className="border-y border-[var(--color-border)] bg-[var(--color-background)]/40 px-4 py-2">
+          <div className="flex items-center gap-3">
+            <span
+              className="text-sm font-semibold text-[var(--color-foreground)]"
+              style={{ marginInlineStart: `${Math.max(0, depth) * 14}px` }}
+            >
+              {title}
+            </span>
+            <div className="h-px flex-1 bg-[var(--color-border)]/60" aria-hidden />
+          </div>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+function subcategoryLabel(sc: CourseRow["subcategory"]): string {
+  if (!sc) return "بدون قسم فرعي";
+  const ar = (sc.nameAr ?? null)?.trim();
+  if (ar) return ar;
+  const n = sc.name?.trim();
+  return n || "بدون قسم فرعي";
+}
 
 function CourseTableRow({
   c,
@@ -84,7 +117,13 @@ function CourseTableRow({
   );
 }
 
-export function CoursesManageList({ courses }: { courses: CourseRow[] }) {
+export function CoursesManageList({
+  courses,
+  subCategoryMeta,
+}: {
+  courses: CourseRow[];
+  subCategoryMeta: Record<string, SubCategoryMeta>;
+}) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -121,6 +160,74 @@ export function CoursesManageList({ courses }: { courses: CourseRow[] }) {
       courses: map.get(key)!.courses,
     }));
   }, [filteredCourses]);
+
+  const groupedByCategoryAndSub = useMemo(() => {
+    const metaMap = new Map<string, SubCategoryMeta>(Object.entries(subCategoryMeta).map(([k, v]) => [k, v]));
+
+    const buildTreeOrder = (categoryId: string) => {
+      const byParent = new Map<string, string[]>();
+      for (const m of metaMap.values()) {
+        if (m.categoryId !== categoryId) continue;
+        const p = m.parentId || "__root__";
+        if (!byParent.has(p)) byParent.set(p, []);
+        byParent.get(p)!.push(m.id);
+      }
+      for (const [p, ids] of byParent.entries()) {
+        ids.sort((a, b) => (metaMap.get(a)?.label ?? "").localeCompare(metaMap.get(b)?.label ?? "", "ar"));
+        byParent.set(p, ids);
+      }
+      const order: Array<{ id: string; depth: number; title: string }> = [];
+      const walk = (parentKey: string, depth: number) => {
+        const ids = byParent.get(parentKey) ?? [];
+        for (const id of ids) {
+          const m = metaMap.get(id);
+          if (!m) continue;
+          order.push({ id, depth, title: m.label });
+          walk(id, depth + 1);
+        }
+      };
+      walk("__root__", 0);
+      return order;
+    };
+
+    return byCategory.map((section) => {
+      // group courses by subcategory id (or none)
+      const coursesBySub = new Map<string, CourseRow[]>();
+      for (const c of section.courses) {
+        const key = c.subcategory?.id?.trim() || "__no_sub__";
+        if (!coursesBySub.has(key)) coursesBySub.set(key, []);
+        coursesBySub.get(key)!.push(c);
+      }
+
+      // render full tree + also show "no subcategory" group if exists
+      const categoryId = section.key === "__none__" ? "" : section.key;
+      const tree = categoryId ? buildTreeOrder(categoryId) : [];
+
+      const rows: Array<{ kind: "divider"; key: string; title: string; depth: number } | { kind: "course"; course: CourseRow }> = [];
+
+      for (const node of tree) {
+        rows.push({ kind: "divider", key: node.id, title: node.title, depth: node.depth });
+        const nodeCourses = coursesBySub.get(node.id) ?? [];
+        for (const c of nodeCourses) rows.push({ kind: "course", course: c });
+      }
+
+      const noSubCourses = coursesBySub.get("__no_sub__") ?? [];
+      if (noSubCourses.length > 0) {
+        rows.push({ kind: "divider", key: "__no_sub__", title: "بدون قسم فرعي", depth: 0 });
+        for (const c of noSubCourses) rows.push({ kind: "course", course: c });
+      }
+
+      // If no tree nodes at all, keep previous behavior
+      if (rows.length === 0) {
+        const title = "بدون قسم فرعي";
+        const depth = 0;
+        rows.push({ kind: "divider", key: "__no_sub__", title, depth });
+        for (const c of section.courses) rows.push({ kind: "course", course: c });
+      }
+
+      return { ...section, rows };
+    });
+  }, [byCategory, subCategoryMeta]);
 
   async function handleDelete(id: string) {
     if (confirmDelete !== id) {
@@ -178,7 +285,7 @@ export function CoursesManageList({ courses }: { courses: CourseRow[] }) {
         </div>
       ) : (
         <div className="space-y-8">
-          {byCategory.map(({ key, title, courses: sectionCourses }) => (
+          {groupedByCategoryAndSub.map(({ key, title, rows }) => (
             <div
               key={key}
               className="overflow-x-auto rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)]"
@@ -188,7 +295,7 @@ export function CoursesManageList({ courses }: { courses: CourseRow[] }) {
                   {title}
                 </h3>
                 <p className="mt-0.5 text-sm text-[var(--color-muted)]">
-                  {sectionCourses.length} دورة
+                  {rows.filter((r) => r.kind === "course").length} دورة
                 </p>
               </div>
               <table className="w-full text-right">
@@ -203,15 +310,19 @@ export function CoursesManageList({ courses }: { courses: CourseRow[] }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {sectionCourses.map((c) => (
-                    <CourseTableRow
-                      key={c.id}
-                      c={c}
-                      deletingId={deletingId}
-                      confirmDelete={confirmDelete}
-                      onDelete={handleDelete}
-                    />
-                  ))}
+                  {rows.map((r) =>
+                    r.kind === "divider" ? (
+                      <SubCategoryDividerRow key={`d-${r.key}`} title={r.title} depth={r.depth} />
+                    ) : (
+                      <CourseTableRow
+                        key={r.course.id}
+                        c={r.course}
+                        deletingId={deletingId}
+                        confirmDelete={confirmDelete}
+                        onDelete={handleDelete}
+                      />
+                    ),
+                  )}
                 </tbody>
               </table>
             </div>

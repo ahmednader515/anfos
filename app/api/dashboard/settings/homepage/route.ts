@@ -41,6 +41,7 @@ export async function PUT(request: NextRequest) {
     primaryColor?: string | null;
     whatsappUrl?: string | null;
     facebookUrl?: string | null;
+    youtubeUrl?: string | null;
     pageTitle?: string | null;
     heroBgPreset?: string | null;
     heroBgCustomFrom?: string | null;
@@ -71,6 +72,8 @@ export async function PUT(request: NextRequest) {
     footerTitle?: string | null;
     footerTagline?: string | null;
     footerCopyright?: string | null;
+    footerContactPhone?: string | null;
+    footerContactEmail?: string | null;
     reviewsSectionTitle?: string | null;
     reviewsSectionSubtitle?: string | null;
     ctaBadgeText?: string | null;
@@ -334,6 +337,15 @@ export async function PUT(request: NextRequest) {
     }
   }
 
+  const normalizeFooterPhone = (input: unknown): string | null => {
+    const s = input != null ? String(input).trim() : "";
+    return s ? s.slice(0, 64) : null;
+  };
+  const normalizeFooterEmail = (input: unknown): string | null => {
+    const s = input != null ? String(input).trim() : "";
+    return s ? s.slice(0, 254) : null;
+  };
+
   let hero_slider_course_id_1: string | null | undefined;
   let hero_slider_course_id_2: string | null | undefined;
   let hero_slider_course_id_3: string | null | undefined;
@@ -386,6 +398,12 @@ export async function PUT(request: NextRequest) {
       primary_color,
       whatsapp_url: body.whatsappUrl !== undefined ? body.whatsappUrl : undefined,
       facebook_url: body.facebookUrl !== undefined ? body.facebookUrl : undefined,
+      youtube_url:
+        body.youtubeUrl !== undefined
+          ? (body.youtubeUrl && String(body.youtubeUrl).trim()
+              ? String(body.youtubeUrl).trim().slice(0, 4000)
+              : null)
+          : undefined,
       page_title: body.pageTitle !== undefined ? body.pageTitle : undefined,
       hero_bg_preset: body.heroBgPreset !== undefined ? body.heroBgPreset : undefined,
       hero_bg_custom_from,
@@ -450,6 +468,10 @@ export async function PUT(request: NextRequest) {
       footer_title: body.footerTitle !== undefined ? body.footerTitle : undefined,
       footer_tagline: body.footerTagline !== undefined ? body.footerTagline : undefined,
       footer_copyright: body.footerCopyright !== undefined ? body.footerCopyright : undefined,
+      footer_contact_phone:
+        body.footerContactPhone !== undefined ? normalizeFooterPhone(body.footerContactPhone) : undefined,
+      footer_contact_email:
+        body.footerContactEmail !== undefined ? normalizeFooterEmail(body.footerContactEmail) : undefined,
       reviews_section_title:
         body.reviewsSectionTitle !== undefined
           ? (body.reviewsSectionTitle && String(body.reviewsSectionTitle).trim()

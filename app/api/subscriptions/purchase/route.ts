@@ -6,7 +6,7 @@ import { getSubscriptionsFeatureEnabled, purchasePlatformSubscription } from "@/
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "STUDENT") {
-    return NextResponse.json({ error: "يجب تسجيل الدخول كطالب" }, { status: 403 });
+    return NextResponse.json({ error: "يجب تسجيل الدخول كعميل" }, { status: 403 });
   }
   const enabled = await getSubscriptionsFeatureEnabled();
   if (!enabled) {
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     if (lower.includes("رصيد") || lower.includes("غير كاف")) {
       return NextResponse.json({ error: msg, insufficientBalance: true }, { status: 400 });
     }
-    if (lower.includes("غير متاح") || lower.includes("طلاب")) {
+    if (lower.includes("غير متاح") || lower.includes("عملاء")) {
       return NextResponse.json({ error: msg }, { status: 400 });
     }
     console.error("POST subscriptions/purchase", e);

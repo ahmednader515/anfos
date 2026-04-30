@@ -27,7 +27,7 @@ export async function POST(
 
   const student = await getUserById(studentId);
   if (!student || student.role !== "STUDENT") {
-    return NextResponse.json({ error: "الطالب غير موجود" }, { status: 404 });
+    return NextResponse.json({ error: "العميل غير موجود" }, { status: 404 });
   }
 
   const newBalance = String(Math.max(0, Number(student.balance) + amount));

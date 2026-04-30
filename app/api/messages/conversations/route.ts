@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getUserById, getOrCreateConversation, getConversationsByStaffId, getConversationsByStudentId } from "@/lib/db";
 
-/** قائمة المحادثات أو إنشاء محادثة جديدة (للأدمن/مساعد عند اختيار طالب) */
+/** قائمة المحادثات أو إنشاء محادثة جديدة (للأدمن/مساعد عند اختيار عميل) */
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -22,7 +22,7 @@ export async function GET() {
   return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
 }
 
-/** إنشاء أو جلب محادثة: أدمن/مساعد مع طالب، أو طالب مع أدمن/مساعد */
+/** إنشاء أو جلب محادثة: أدمن/مساعد مع عميل، أو عميل مع أدمن/مساعد */
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
   if (role === "ADMIN" || role === "ASSISTANT_ADMIN" || role === "TEACHER") {
     const studentId = body.studentId?.trim();
     if (!studentId) {
-      return NextResponse.json({ error: "معرف الطالب مطلوب" }, { status: 400 });
+      return NextResponse.json({ error: "معرف العميل مطلوب" }, { status: 400 });
     }
     const conversation = await getOrCreateConversation(session.user.id, studentId);
     return NextResponse.json(conversation);

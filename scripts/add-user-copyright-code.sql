@@ -1,4 +1,4 @@
--- كود حقوق الطبع والنشر لكل طالب (علامة مائية قابلة للبحث من لوحة الطلاب)
+-- كود حقوق الطبع والنشر لكل عميل (علامة مائية قابلة للبحث من لوحة العملاء)
 ALTER TABLE "User" ADD COLUMN IF NOT EXISTS copyright_code VARCHAR(10);
 
 CREATE UNIQUE INDEX IF NOT EXISTS user_copyright_code_unique

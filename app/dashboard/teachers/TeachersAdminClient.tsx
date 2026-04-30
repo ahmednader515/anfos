@@ -337,7 +337,7 @@ export function TeachersAdminClient({
           <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]">
             <h2 className="text-lg font-semibold text-[var(--color-foreground)]">إنشاء حساب مدرس</h2>
             <p className="mt-1 text-sm text-[var(--color-muted)]">
-              البريد أو رقم الهاتف (10 أرقام على الأقل) لتسجيل الدخول كما في الطلاب. كلمة المرور تسلّم للمدرس بشكل آمن خارج المنصة. يمكنك ضبط المادة والصورة كما في تعديل الملف الشخصي للمدرس (اختياري).
+              البريد أو رقم الهاتف (10 أرقام على الأقل) لتسجيل الدخول كما في العملاء. كلمة المرور تسلّم للمدرس بشكل آمن خارج المنصة. يمكنك ضبط المادة والصورة كما في تعديل الملف الشخصي للمدرس (اختياري).
             </p>
             <form onSubmit={createTeacher} className="mt-4 grid max-w-2xl gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
@@ -383,7 +383,7 @@ export function TeachersAdminClient({
                 />
               </div>
               <div className="sm:col-span-2">
-                <span className="block text-sm font-medium text-[var(--color-foreground)]">صورة الملف الظاهر للطلاب (اختياري)</span>
+                <span className="block text-sm font-medium text-[var(--color-foreground)]">صورة الملف الظاهر للعملاء (اختياري)</span>
                 <p className="mt-1 text-xs text-[var(--color-muted)]">اتركها فارغة إن لم ترد رفع صورة الآن؛ يمكن للمدرس تعديلها لاحقاً من ملفه الشخصي.</p>
                 {avatarUrl ? (
                   <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -625,7 +625,7 @@ export function TeachersAdminClient({
                 />
               </div>
               <div>
-                <span className="block text-sm font-medium text-[var(--color-foreground)]">صورة الملف الظاهر للطلاب</span>
+                <span className="block text-sm font-medium text-[var(--color-foreground)]">صورة الملف الظاهر للعملاء</span>
                 {editAvatarUrl ? (
                   <div className="mt-2 flex flex-wrap items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}

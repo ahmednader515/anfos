@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getReviews, createReview } from "@/lib/db";
 
-/** قائمة تعليقات الطلاب — للأدمن فقط */
+/** قائمة تعليقات العملاء — للأدمن فقط */
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "ADMIN") {

@@ -10,7 +10,6 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [studentNumber, setStudentNumber] = useState("");
-  const [guardianNumber, setGuardianNumber] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -32,7 +31,6 @@ export default function RegisterPage() {
         password,
         name,
         student_number: studentNumber.trim() || undefined,
-        guardian_number: guardianNumber.trim() || undefined,
       }),
     });
     const data = await res.json().catch(() => ({}));
@@ -54,7 +52,7 @@ export default function RegisterPage() {
           إنشاء حساب
         </h1>
         <p className="mt-1 text-sm text-[var(--color-muted)]">
-          سجّل كطالب للوصول إلى الدورات والتعلم
+          سجّل كعميل للوصول إلى الدورات والتعلم
         </p>
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           {error && (
@@ -115,22 +113,6 @@ export default function RegisterPage() {
               placeholder="01234567890"
             />
             <p className="mt-1 text-right text-xs text-[var(--color-muted)]">01234567890</p>
-          </div>
-          <div>
-            <label
-              htmlFor="guardian_number"
-              className="block text-sm font-medium text-[var(--color-foreground)]"
-            >
-              رقم ولي الأمر
-            </label>
-            <input
-              id="guardian_number"
-              type="text"
-              value={guardianNumber}
-              onChange={(e) => setGuardianNumber(e.target.value)}
-              className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-[var(--color-foreground)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
-              placeholder="رقم ولي الأمر"
-            />
           </div>
           <div>
             <label

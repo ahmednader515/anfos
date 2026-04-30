@@ -41,7 +41,7 @@ export default async function DashboardPage() {
         <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]">
           <h2 className="text-lg font-semibold text-[var(--color-foreground)]">مرحباً، {session.user.name}</h2>
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            لوحة المدرس: أدر كورساتك، تابع الطلاب المسجلين فيها، والواجبات والبث والأكواد من القائمة أعلاه.
+            لوحة المدرس: أدر كورساتك، تابع العملاء المسجلين فيها، والواجبات والبث والأكواد من القائمة أعلاه.
           </p>
         </div>
         <div>
@@ -60,21 +60,21 @@ export default async function DashboardPage() {
               className="flex min-h-[160px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center transition hover:border-[var(--color-primary)]/30"
             >
               <h3 className="font-semibold text-[var(--color-foreground)]">تعديل الملف الشخصي</h3>
-              <p className="mt-1 text-sm text-[var(--color-muted)]">الاسم، كلمة المرور، الصورة والمادة الظاهرة للطلاب</p>
+              <p className="mt-1 text-sm text-[var(--color-muted)]">الاسم، كلمة المرور، الصورة والمادة الظاهرة للعملاء</p>
             </Link>
             <Link
               href="/dashboard/statistics"
               className="flex min-h-[160px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center transition hover:border-[var(--color-primary)]/30"
             >
-              <h3 className="font-semibold text-[var(--color-foreground)]">إحصائيات الطلاب</h3>
+              <h3 className="font-semibold text-[var(--color-foreground)]">إحصائيات العملاء</h3>
               <p className="mt-1 text-sm text-[var(--color-muted)]">درجات الاختبارات والتسجيلات في كورساتك</p>
             </Link>
             <Link
               href="/dashboard/messages"
               className="flex min-h-[160px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center transition hover:border-[var(--color-primary)]/30"
             >
-              <h3 className="font-semibold text-[var(--color-foreground)]">تواصل مع الطلاب</h3>
-              <p className="mt-1 text-sm text-[var(--color-muted)]">طلاب اشتركوا في كورساتك</p>
+              <h3 className="font-semibold text-[var(--color-foreground)]">تواصل مع العملاء</h3>
+              <p className="mt-1 text-sm text-[var(--color-muted)]">عملاء اشتركوا في كورساتك</p>
             </Link>
             <Link
               href="/dashboard/homework"
@@ -280,13 +280,13 @@ export default async function DashboardPage() {
                 className="flex min-h-[200px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center transition hover:border-[var(--color-primary)]/30"
               >
                 <h3 className="font-semibold text-[var(--color-foreground)]">إنشاء الأكواد</h3>
-                <p className="mt-1 text-sm text-[var(--color-muted)]">إنشاء أكواد تفعيل مجانية لدورة وتوزيعها على الطلاب</p>
+                <p className="mt-1 text-sm text-[var(--color-muted)]">إنشاء أكواد تفعيل مجانية لدورة وتوزيعها على العملاء</p>
               </Link>
             </div>
             {isAdmin ? (
               <div className="mt-5 rounded-[var(--radius-card)] border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
                 <p className="text-sm text-amber-800 dark:text-amber-200">
-                  يمكنك تعديل طرق الدفع التي تظهر عند الطالب من الضغط{" "}
+                  يمكنك تعديل طرق الدفع التي تظهر عند العميل من الضغط{" "}
                   <Link href="/dashboard/settings/add-balance" className="font-semibold underline">
                     هنا
                   </Link>
@@ -299,23 +299,23 @@ export default async function DashboardPage() {
         </>
       )}
 
-      {/* قسم: إدارة الطلاب */}
+      {/* قسم: إدارة العملاء */}
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-[var(--color-foreground)]">إدارة الطلاب</h2>
+        <h2 className="mb-4 text-lg font-semibold text-[var(--color-foreground)]">إدارة العملاء</h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             href="/dashboard/students"
             className="flex min-h-[200px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center transition hover:border-[var(--color-primary)]/30"
           >
-            <h3 className="font-semibold text-[var(--color-foreground)]">{isAdmin ? "الطلاب والحسابات" : "الطلاب"}</h3>
+            <h3 className="font-semibold text-[var(--color-foreground)]">{isAdmin ? "العملاء والحسابات" : "العملاء"}</h3>
             <p className="mt-1 text-3xl font-bold text-[var(--color-primary)]">{studentsCount}</p>
-            <p className="mt-1 text-sm text-[var(--color-muted)]">إدارة الطلاب، تعديل الحسابات، إضافة الأرصدة</p>
+            <p className="mt-1 text-sm text-[var(--color-muted)]">إدارة العملاء، تعديل الحسابات، إضافة الأرصدة</p>
           </Link>
           <Link
             href="/dashboard/statistics"
             className="flex min-h-[200px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center transition hover:border-[var(--color-primary)]/30"
           >
-            <h3 className="font-semibold text-[var(--color-foreground)]">إحصائيات الطلاب</h3>
+            <h3 className="font-semibold text-[var(--color-foreground)]">إحصائيات العملاء</h3>
             <div className="mt-3 flex flex-wrap justify-center gap-2">
               <span className="text-2xl font-bold text-[var(--color-primary)]">{totalEarnings.toFixed(2)}</span>
               <span className="text-sm text-[var(--color-muted)]">ج.م أرباح</span>
@@ -328,15 +328,15 @@ export default async function DashboardPage() {
                 href="/dashboard/homework"
                 className="flex min-h-[200px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center transition hover:border-[var(--color-primary)]/30"
               >
-                <h3 className="font-semibold text-[var(--color-foreground)]">استلام واجبات الطلاب</h3>
-                <p className="mt-1 text-sm text-[var(--color-muted)]">عرض تسليمات الواجبات والبحث باسم الطالب</p>
+                <h3 className="font-semibold text-[var(--color-foreground)]">استلام واجبات العملاء</h3>
+                <p className="mt-1 text-sm text-[var(--color-muted)]">عرض تسليمات الواجبات والبحث باسم العميل</p>
               </Link>
               <Link
                 href="/dashboard/messages"
                 className="flex min-h-[200px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center transition hover:border-[var(--color-primary)]/30"
               >
                 <h3 className="font-semibold text-[var(--color-foreground)]">تواصل خاص مع الطلبة</h3>
-                <p className="mt-1 text-sm text-[var(--color-muted)]">محادثة مع طالب، إرسال رسائل أو صور أو ملفات</p>
+                <p className="mt-1 text-sm text-[var(--color-muted)]">محادثة مع عميل، إرسال رسائل أو صور أو ملفات</p>
               </Link>
             </>
           )}
@@ -346,9 +346,9 @@ export default async function DashboardPage() {
       {(isAdmin || isAssistant) && (
         <div className="rounded-[var(--radius-card)] border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
           <p className="text-sm text-amber-800 dark:text-amber-200">
-            يمكنك إضافة رصيد لحسابات الطلاب وتعديل أسمائهم وكلمات المرور من صفحة{" "}
+            يمكنك إضافة رصيد لحسابات العملاء وتعديل أسمائهم وكلمات المرور من صفحة{" "}
             <Link href="/dashboard/students" className="font-medium underline">
-              الطلاب
+              العملاء
             </Link>
             .
           </p>
@@ -373,8 +373,8 @@ export default async function DashboardPage() {
                 href="/dashboard/reviews"
                 className="flex min-h-[200px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center transition hover:border-[var(--color-primary)]/30"
               >
-                <h3 className="font-semibold text-[var(--color-foreground)]">تعليقات الطلاب</h3>
-                <p className="mt-1 text-sm text-[var(--color-muted)]">إدارة تعليقات الطلاب المعروضة في الصفحة الرئيسية (إضافة / تعديل / حذف)</p>
+                <h3 className="font-semibold text-[var(--color-foreground)]">تعليقات العملاء</h3>
+                <p className="mt-1 text-sm text-[var(--color-muted)]">إدارة تعليقات العملاء المعروضة في الصفحة الرئيسية (إضافة / تعديل / حذف)</p>
               </Link>
             </div>
           </div>
@@ -387,7 +387,7 @@ export default async function DashboardPage() {
               تحويل المنصة الشخصية إلى أكاديمية تضم عدداً من المدرسين وإمكانية إنشاء اشتراكات للمحتوى المعروض
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[var(--color-muted)]">
-              من هنا تفعّل عرض المدرسين على الموقع، وتنشئ حسابات مدرسين لكل منهم دوراته الظاهرة في بطاقته، لتتحول المنصة من مسار شخصي واحد إلى أكاديمية يعلّم فيها عدة مدرسين.               كما يمكنك من الأسفل ضبط اشتراكات المنصة (أسبوعية أو شهرية أو سنوية) ليصل الطلاب لجميع الكورسات المدفوعة المنشورة ضمن مدة الاشتراك، ومتابعة الطلاب المشتركين وتعديل أو حذف سجلات اشتراكهم.
+              من هنا تفعّل عرض المدرسين على الموقع، وتنشئ حسابات مدرسين لكل منهم دوراته الظاهرة في بطاقته، لتتحول المنصة من مسار شخصي واحد إلى أكاديمية يعلّم فيها عدة مدرسين.               كما يمكنك من الأسفل ضبط اشتراكات المنصة (أسبوعية أو شهرية أو سنوية) ليصل العملاء لجميع الكورسات المدفوعة المنشورة ضمن مدة الاشتراك، ومتابعة العملاء المشتركين وتعديل أو حذف سجلات اشتراكهم.
             </p>
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <Link
@@ -412,7 +412,7 @@ export default async function DashboardPage() {
                 href="/dashboard/subscription-students"
                 className="flex min-h-[200px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-primary)]/25 bg-[var(--color-background)] p-6 text-center transition hover:border-[var(--color-primary)]/50 hover:shadow-[var(--shadow-card)]"
               >
-                <h3 className="font-semibold text-[var(--color-foreground)]">إدارة الطلاب المشتركين</h3>
+                <h3 className="font-semibold text-[var(--color-foreground)]">إدارة العملاء المشتركين</h3>
                 <p className="mt-2 text-sm text-[var(--color-muted)]">
                   قائمة من اشترك في باقات المنصة والمبالغ المدفوعة، مع إمكانية تعديل تاريخ انتهاء الاشتراك أو حذف السجل
                 </p>

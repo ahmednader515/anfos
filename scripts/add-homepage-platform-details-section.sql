@@ -16,7 +16,7 @@ SET
     '[
       {"id":"platform-detail-1","title":"فصول افتراضية فورية","description":"تصميم الفصول والمعلومات خلال الفصول الافتراضية.","iconType":"preset","presetIcon":"book","customIconUrl":null},
       {"id":"platform-detail-2","title":"محتوى جذاب في دقائق","description":"تصميم وإنشاء المحتوى التعليمي بشكل سريع ومميز.","iconType":"preset","presetIcon":"pencil","customIconUrl":null},
-      {"id":"platform-detail-3","title":"أنشطة وفعاليات رائعة","description":"تجذب الطلاب وتنشئ تفاعلهم بعد أو داخل الصف الدراسي.","iconType":"preset","presetIcon":"bulb","customIconUrl":null},
+      {"id":"platform-detail-3","title":"أنشطة وفعاليات رائعة","description":"تجذب العملاء وتنشئ تفاعلهم بعد أو داخل الصف الدراسي.","iconType":"preset","presetIcon":"bulb","customIconUrl":null},
       {"id":"platform-detail-4","title":"تواصل فعال","description":"أدوات للتواصل والتعاون الفعال بين كل أطراف العملية التعليمية.","iconType":"preset","presetIcon":"chat","customIconUrl":null}
     ]'
   ),

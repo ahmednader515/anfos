@@ -7,7 +7,7 @@ import { signOut } from "next-auth/react";
 const ROLES = [
   { value: "ADMIN", label: "أدمن" },
   { value: "ASSISTANT_ADMIN", label: "مساعد أدمن" },
-  { value: "STUDENT", label: "طالب" },
+  { value: "STUDENT", label: "عميل" },
 ] as const;
 
 type Props = {

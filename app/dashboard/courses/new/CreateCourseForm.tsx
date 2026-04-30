@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CourseFormSaveOverlay } from "../CourseFormSaveOverlay";
 
 type CategoryOption = { id: string; name: string; nameAr?: string | null };
+type SubCategoryOption = { id: string; name: string; nameAr?: string | null };
 type LessonRow = { title: string; videoUrl: string; content: string; pdfUrl: string; acceptsHomework: boolean };
 type QuestionOptionRow = { text: string; isCorrect: boolean };
 type QuestionRow = { type: "MULTIPLE_CHOICE" | "TRUE_FALSE"; questionText: string; options: QuestionOptionRow[] };
@@ -16,6 +17,7 @@ export function CreateCourseForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [categories, setCategories] = useState<CategoryOption[]>([]);
+  const [subCategories, setSubCategories] = useState<SubCategoryOption[]>([]);
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -25,6 +27,9 @@ export function CreateCourseForm() {
     maxQuizAttempts: "",
     categoryId: "",
     categoryName: "",
+    subcategoryId: "",
+    subcategoryName: "",
+    subcategoryImageUrl: "",
   });
   const [lessons, setLessons] = useState<LessonRow[]>([{ title: "", videoUrl: "", content: "", pdfUrl: "", acceptsHomework: false }]);
 
@@ -38,6 +43,27 @@ export function CreateCourseForm() {
   useEffect(() => {
     loadCategories();
   }, []);
+
+  const loadSubCategories = (categoryId: string) => {
+    const cid = categoryId.trim();
+    if (!cid) {
+      setSubCategories([]);
+      return;
+    }
+    fetch(`/api/subcategories?categoryId=${encodeURIComponent(cid)}`)
+      .then((r) => r.json())
+      .then((data) => Array.isArray(data) && setSubCategories(data))
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    if (form.categoryId.trim()) {
+      loadSubCategories(form.categoryId);
+    } else {
+      setSubCategories([]);
+    }
+    setForm((f) => ({ ...f, subcategoryId: "", subcategoryName: "", subcategoryImageUrl: "" }));
+  }, [form.categoryId]);
 
   const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null);
   async function handleDeleteCategory(catId: string) {
@@ -57,10 +83,30 @@ export function CreateCourseForm() {
     }
   }
 
+  const [deletingSubCategoryId, setDeletingSubCategoryId] = useState<string | null>(null);
+  async function handleDeleteSubCategory(subId: string) {
+    if (!confirm("حذف هذا القسم الفرعي؟ الدورات المرتبطة به ستُعرض كـ «بدون قسم فرعي».")) return;
+    setDeletingSubCategoryId(subId);
+    try {
+      const res = await fetch(`/api/subcategories/${encodeURIComponent(subId)}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        alert(data.error ?? "فشل حذف القسم الفرعي");
+        return;
+      }
+      if (form.subcategoryId === subId) setForm((f) => ({ ...f, subcategoryId: "" }));
+      if (form.categoryId.trim()) loadSubCategories(form.categoryId);
+    } finally {
+      setDeletingSubCategoryId(null);
+    }
+  }
+
   const [quizzes, setQuizzes] = useState<QuizRow[]>([{ title: "", timeLimitMinutes: "", questions: [{ type: "MULTIPLE_CHOICE", questionText: "", options: [{ text: "", isCorrect: false }] }] }]);
   const [contentOrder, setContentOrder] = useState<ContentOrderEntry[]>([{ type: "lesson", index: 0 }, { type: "quiz", index: 0 }]);
   const [imageUploading, setImageUploading] = useState(false);
   const [imageUploadError, setImageUploadError] = useState("");
+  const [subCategoryImageUploading, setSubCategoryImageUploading] = useState(false);
+  const [subCategoryImageUploadError, setSubCategoryImageUploadError] = useState("");
   const [pdfUploading, setPdfUploading] = useState<number | null>(null);
 
   function slugify(s: string) {
@@ -241,6 +287,9 @@ export function CreateCourseForm() {
       ...(form.categoryName.trim()
         ? { categoryName: form.categoryName.trim() }
         : form.categoryId ? { categoryId: form.categoryId } : {}),
+      ...(form.subcategoryName.trim()
+        ? { subcategoryName: form.subcategoryName.trim(), subcategoryImageUrl: form.subcategoryImageUrl.trim() || undefined }
+        : form.subcategoryId ? { subcategoryId: form.subcategoryId } : {}),
       lessons: validLessons.map((l) => ({
           title: l.title.trim(),
           videoUrl: l.videoUrl.trim() || undefined,
@@ -355,7 +404,7 @@ export function CreateCourseForm() {
             <p className="mt-1 text-xs text-[var(--color-muted)]">اختر قسمًا موجودًا أو اكتب اسم قسم جديد ليتم إنشاؤه وربط الدورة به</p>
             <select
               value={form.categoryName.trim() ? "" : form.categoryId}
-              onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value, categoryName: "" }))}
+              onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value, categoryName: "", subcategoryId: "", subcategoryName: "" }))}
               className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             >
               <option value="">بدون قسم</option>
@@ -370,7 +419,7 @@ export function CreateCourseForm() {
               <input
                 type="text"
                 value={form.categoryName}
-                onChange={(e) => setForm((f) => ({ ...f, categoryName: e.target.value, categoryId: "" }))}
+                onChange={(e) => setForm((f) => ({ ...f, categoryName: e.target.value, categoryId: "", subcategoryId: "", subcategoryName: "" }))}
                 placeholder="اكتب هنا اسم المرحلة التعليمية"
                 className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
               />
@@ -389,6 +438,127 @@ export function CreateCourseForm() {
                         className="rounded border border-red-500/50 bg-red-500/10 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-500/20 disabled:opacity-50"
                       >
                         {deletingCategoryId === cat.id ? "جاري الحذف..." : "حذف"}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-foreground)]">القسم الفرعي (اختياري)</label>
+            <p className="mt-1 text-xs text-[var(--color-muted)]">
+              اختر قسمًا فرعيًا ضمن القسم الرئيسي، أو اكتب اسم قسم فرعي جديد.
+            </p>
+            <select
+              value={form.subcategoryName.trim() ? "" : form.subcategoryId}
+              onChange={(e) => setForm((f) => ({ ...f, subcategoryId: e.target.value, subcategoryName: "" }))}
+              disabled={!form.categoryId.trim() || !!form.categoryName.trim()}
+              className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 disabled:opacity-60"
+            >
+              <option value="">بدون قسم فرعي</option>
+              {subCategories.map((sc) => (
+                <option key={sc.id} value={sc.id}>
+                  {sc.nameAr ?? sc.name}
+                </option>
+              ))}
+            </select>
+            <div className="mt-2">
+              <label className="block text-xs text-[var(--color-muted)]">أو اكتب اسم قسم فرعي جديد</label>
+              <input
+                type="text"
+                value={form.subcategoryName}
+                onChange={(e) => setForm((f) => ({ ...f, subcategoryName: e.target.value, subcategoryId: "" }))}
+                placeholder="اكتب هنا اسم القسم الفرعي"
+                disabled={!form.categoryId.trim() || !!form.categoryName.trim()}
+                className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm disabled:opacity-60"
+              />
+            </div>
+
+            {form.subcategoryName.trim() ? (
+              <div className="mt-3">
+                <label className="block text-xs text-[var(--color-muted)]">صورة القسم الفرعي (اختياري)</label>
+                {form.subcategoryImageUrl ? (
+                  <div className="mt-1 flex items-start gap-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={form.subcategoryImageUrl}
+                      alt="معاينة"
+                      className="h-20 w-32 rounded-[var(--radius-btn)] border border-[var(--color-border)] object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, subcategoryImageUrl: "" }))}
+                      className="text-sm text-red-600 hover:underline"
+                    >
+                      إزالة
+                    </button>
+                  </div>
+                ) : null}
+
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <label className="cursor-pointer rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-2 text-sm font-medium transition hover:bg-[var(--color-border)]/50">
+                    {subCategoryImageUploading ? "جاري الرفع..." : "اختر صورة للرفع"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={subCategoryImageUploading}
+                      onChange={async (e) => {
+                        const f = e.target.files?.[0];
+                        if (!f) return;
+                        setSubCategoryImageUploading(true);
+                        setSubCategoryImageUploadError("");
+                        try {
+                          const fd = new FormData();
+                          fd.set("file", f);
+                          const res = await fetch("/api/upload/image", { method: "POST", body: fd });
+                          const data = await res.json().catch(() => ({}));
+                          if (res.ok && data.url) {
+                            setForm((prev) => ({ ...prev, subcategoryImageUrl: data.url }));
+                          } else {
+                            const msg = data.missing?.length ? `${data.error} ${data.missing.join(", ")}` : (data.error || "فشل الرفع");
+                            setSubCategoryImageUploadError(msg);
+                          }
+                        } catch {
+                          setSubCategoryImageUploadError("فشل الاتصال بالخادم");
+                        } finally {
+                          setSubCategoryImageUploading(false);
+                          e.target.value = "";
+                        }
+                      }}
+                    />
+                  </label>
+                  <input
+                    type="url"
+                    value={form.subcategoryImageUrl}
+                    onChange={(e) => { setForm((f) => ({ ...f, subcategoryImageUrl: e.target.value })); setSubCategoryImageUploadError(""); }}
+                    placeholder="أو أدخل رابط صورة: https://..."
+                    className="flex-1 min-w-[220px] rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
+                  />
+                </div>
+                {subCategoryImageUploadError && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{subCategoryImageUploadError}</p>
+                )}
+              </div>
+            ) : null}
+            {subCategories.length > 0 && (
+              <div className="mt-3">
+                <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">حذف قسم فرعي مُنشأ مسبقاً</p>
+                <ul className="space-y-1.5">
+                  {subCategories.map((sc) => (
+                    <li key={sc.id} className="flex items-center justify-between gap-2 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm">
+                      <span className="text-[var(--color-foreground)]">{sc.nameAr ?? sc.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteSubCategory(sc.id)}
+                        disabled={deletingSubCategoryId === sc.id}
+                        className="rounded border border-red-500/50 bg-red-500/10 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-500/20 disabled:opacity-50"
+                      >
+                        {deletingSubCategoryId === sc.id ? "جاري الحذف..." : "حذف"}
                       </button>
                     </li>
                   ))}
@@ -525,7 +695,7 @@ export function CreateCourseForm() {
                   onChange={(e) => updateLesson(i, "acceptsHomework", e.target.checked)}
                   className="rounded border-[var(--color-border)]"
                 />
-                <span className="text-sm text-[var(--color-foreground)]">إتاحة إرسال الواجب من الطالب لهذه الحصة (رابط / PDF / صورة)</span>
+                <span className="text-sm text-[var(--color-foreground)]">إتاحة إرسال الواجب من العميل لهذه الحصة (رابط / PDF / صورة)</span>
               </label>
             </div>
           </div>
@@ -551,7 +721,7 @@ export function CreateCourseForm() {
             className="mt-1 w-full max-w-xs rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
           <p className="mt-1 text-xs text-[var(--color-muted)]">
-            أقصى عدد مرات يسمح فيها للطالب بحل اختبارات هذا الكورس (مجموع كل الاختبارات). اتركه فارغاً لعدم التحديد.
+            أقصى عدد مرات يسمح فيها للعميل بحل اختبارات هذا الكورس (مجموع كل الاختبارات). اتركه فارغاً لعدم التحديد.
           </p>
         </div>
         {quizzes.map((quiz, qi) => (
@@ -578,7 +748,7 @@ export function CreateCourseForm() {
                 onChange={(e) => updateQuizTimeLimit(qi, e.target.value)}
                 className="mt-1 w-full max-w-xs rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
               />
-              <p className="mt-1 text-xs text-[var(--color-muted)]">اتركه فارغاً لاختبار بوقت مفتوح. عند تحديد دقائق، يُصحَّح الاختبار تلقائياً عند انتهاء الوقت ويُعرض للطالب إشعار.</p>
+              <p className="mt-1 text-xs text-[var(--color-muted)]">اتركه فارغاً لاختبار بوقت مفتوح. عند تحديد دقائق، يُصحَّح الاختبار تلقائياً عند انتهاء الوقت ويُعرض للعميل إشعار.</p>
             </div>
             {quiz.questions.map((q, qti) => (
               <div key={qti} className="mb-4 rounded border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
@@ -670,7 +840,7 @@ export function CreateCourseForm() {
       <section className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
         <h3 className="mb-2 text-lg font-semibold text-[var(--color-foreground)]">ترتيب محتويات الكورس</h3>
         <p className="mb-4 text-sm text-[var(--color-muted)]">
-          تحكم في ترتيب الحصص والاختبارات كما تظهر للطالب. يمكنك وضع اختبار بين حصتين باستخدام أزرار الأعلى/الأسفل.
+          تحكم في ترتيب الحصص والاختبارات كما تظهر للعميل. يمكنك وضع اختبار بين حصتين باستخدام أزرار الأعلى/الأسفل.
         </p>
         <ul className="space-y-2">
           {contentOrder.map((entry, pos) => {

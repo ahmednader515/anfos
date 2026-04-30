@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getEnrollment, deleteEnrollment } from "@/lib/db";
 
-/** إزالة طالب من دورة - للأدمن فقط */
+/** إزالة عميل من دورة - للأدمن فقط */
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string; courseId: string }> }

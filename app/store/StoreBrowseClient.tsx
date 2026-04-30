@@ -59,52 +59,66 @@ export function StoreBrowseClient({
         </div>
         {error ? <p className="mt-3 text-sm text-red-500">{error}</p> : null}
 
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {filtered.map((p) => (
             <article key={p.id} className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)]">
               {p.imageUrl ? <img src={p.imageUrl} alt={p.title} className="h-44 w-full object-cover" /> : <div className="h-44 bg-[var(--color-primary)]/10" />}
               <div className="p-5">
                 <h3 className="text-lg font-semibold text-[var(--color-foreground)]">{p.title}</h3>
                 <p className="mt-2 line-clamp-3 text-sm text-[var(--color-muted)]">{p.description}</p>
-                <div className="mt-4 flex items-center justify-between gap-3">
+                <div className="mt-4 flex flex-col gap-3">
                   {(() => {
                     const canAccess = isSubscribed || ownedIds.includes(p.id);
                     const canDownload = canAccess && !!p.pdfUrl;
                     return (
                       <>
-                  {isSubscribed ? (
-                    <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-500">
-                      مجاني ضمن اشتراكك
-                    </span>
-                  ) : ownedIds.includes(p.id) ? (
-                    <span className="rounded-full bg-sky-500/15 px-3 py-1 text-xs font-semibold text-sky-400">
-                      تم الشراء بنجاح
-                    </span>
-                  ) : (
-                    <span className="text-sm font-semibold text-[var(--color-primary)]">{Number(p.price).toFixed(2)} ج.م</span>
-                  )}
-                  {canDownload ? (
-                    <a href={p.pdfUrl ?? undefined} target="_blank" rel="noopener noreferrer" className="rounded-[var(--radius-btn)] bg-[var(--color-primary)] px-3 py-2 text-xs font-medium text-white hover:bg-[var(--color-primary-hover)]">تحميل PDF</a>
-                  ) : canAccess ? (
-                    <span className="text-xs text-[var(--color-muted)]">الملف غير متاح حالياً</span>
-                  ) : (
-                    isLoggedIn ? (
-                      <button
-                        onClick={() => void buy(p.id)}
-                        disabled={loadingId === p.id}
-                        className="rounded-[var(--radius-btn)] bg-[var(--color-primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--color-primary-hover)] hover:shadow-lg disabled:opacity-60"
-                      >
-                        {loadingId === p.id ? "جاري الشراء..." : "شراء المنتج"}
-                      </button>
-                    ) : (
-                      <Link
-                        href="/login"
-                        className="rounded-[var(--radius-btn)] bg-[var(--color-primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--color-primary-hover)] hover:shadow-lg"
-                      >
-                        تسجيل الدخول للشراء
-                      </Link>
-                    )
-                  )}
+                        <div className="flex items-center justify-between gap-3">
+                          {isSubscribed ? (
+                            <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-500">
+                              مجاني ضمن اشتراكك
+                            </span>
+                          ) : ownedIds.includes(p.id) ? (
+                            <span className="rounded-full bg-sky-500/15 px-3 py-1 text-xs font-semibold text-sky-400">
+                              تم الشراء بنجاح
+                            </span>
+                          ) : (
+                            <span className="text-sm font-semibold text-[var(--color-primary)]">
+                              {Number(p.price).toFixed(2)} ج.م
+                            </span>
+                          )}
+                        </div>
+
+                        <div>
+                          {canDownload ? (
+                            <a
+                              href={p.pdfUrl ?? undefined}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block w-full rounded-[var(--radius-btn)] bg-[var(--color-primary)] px-3 py-2 text-center text-xs font-medium text-white hover:bg-[var(--color-primary-hover)]"
+                            >
+                              تحميل PDF
+                            </a>
+                          ) : canAccess ? (
+                            <span className="block text-xs text-[var(--color-muted)]">
+                              الملف غير متاح حالياً
+                            </span>
+                          ) : isLoggedIn ? (
+                            <button
+                              onClick={() => void buy(p.id)}
+                              disabled={loadingId === p.id}
+                              className="w-full rounded-[var(--radius-btn)] bg-[var(--color-primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-[var(--color-primary-hover)] hover:shadow-lg disabled:opacity-60"
+                            >
+                              {loadingId === p.id ? "جاري الشراء..." : "شراء المنتج"}
+                            </button>
+                          ) : (
+                            <Link
+                              href="/login"
+                              className="block w-full rounded-[var(--radius-btn)] bg-[var(--color-primary)] px-5 py-2.5 text-center text-sm font-semibold text-white shadow-md transition hover:bg-[var(--color-primary-hover)] hover:shadow-lg"
+                            >
+                              تسجيل الدخول للشراء
+                            </Link>
+                          )}
+                        </div>
                       </>
                     );
                   })()}

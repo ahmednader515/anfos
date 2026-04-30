@@ -12,6 +12,10 @@ import {
   findCategoryByNameForDashboard,
   createCategory,
   categoryIsManageableOnDashboard,
+  createSubCategory,
+  findSubCategoryByNameForDashboard,
+  getSubCategoryById,
+  subCategoryIsManageableOnDashboard,
 } from "@/lib/db";
 
 export async function GET() {
@@ -48,6 +52,9 @@ export async function POST(request: NextRequest) {
     maxQuizAttempts?: number | null;
     categoryId?: string | null;
     categoryName?: string;
+    subcategoryId?: string | null;
+    subcategoryName?: string;
+    subcategoryImageUrl?: string;
     acceptsHomework?: boolean;
     lessons?: LessonInput[];
     quizzes?: QuizInput[];
@@ -96,6 +103,47 @@ export async function POST(request: NextRequest) {
     categoryId = cid;
   }
 
+  // Subcategory is only valid when a category is selected
+  let subcategoryId: string | null = null;
+  const subName = body.subcategoryName?.trim();
+  const subImageUrl = body.subcategoryImageUrl?.trim() || null;
+  if (subName) {
+    if (!categoryId) {
+      return NextResponse.json({ error: "اختر القسم الرئيسي أولاً قبل إضافة قسم فرعي" }, { status: 400 });
+    }
+    let sc = await findSubCategoryByNameForDashboard(subName, categoryId, session.user.id, role);
+    if (!sc) {
+      const baseSlug =
+        subName.toLowerCase().replace(/\s+/g, "-").replace(/[^\w\u0600-\u06FF-]+/g, "") || "subcat";
+      const uniqueSlug = `${baseSlug}-${Date.now()}`;
+      sc = await createSubCategory({
+        category_id: categoryId,
+        name: subName,
+        name_ar: subName,
+        slug: uniqueSlug,
+        image_url: subImageUrl,
+        created_by_id: role === "TEACHER" ? session.user.id : null,
+      });
+    }
+    subcategoryId = sc.id;
+  } else if (body.subcategoryId !== undefined) {
+    const incoming = body.subcategoryId?.trim() || "";
+    if (!incoming) {
+      subcategoryId = null;
+    } else {
+      const ok = await subCategoryIsManageableOnDashboard(incoming, session.user.id, role);
+      if (!ok) {
+        return NextResponse.json({ error: "القسم الفرعي غير صالح أو غير مسموح" }, { status: 400 });
+      }
+      const sc = await getSubCategoryById(incoming);
+      if (!sc) return NextResponse.json({ error: "القسم الفرعي غير موجود" }, { status: 400 });
+      if (categoryId && String((sc as { categoryId?: unknown }).categoryId ?? (sc as { category_id?: unknown }).category_id) !== categoryId) {
+        return NextResponse.json({ error: "القسم الفرعي لا يتبع القسم الرئيسي المختار" }, { status: 400 });
+      }
+      subcategoryId = incoming;
+    }
+  }
+
   let course;
   try {
     course = await createCourse({
@@ -110,6 +158,7 @@ export async function POST(request: NextRequest) {
       created_by_id: session.user.id,
       max_quiz_attempts: body.maxQuizAttempts ?? null,
       category_id: categoryId,
+      subcategory_id: subcategoryId,
       accepts_homework: !!body.acceptsHomework,
     });
   } catch (err) {

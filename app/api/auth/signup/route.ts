@@ -13,7 +13,6 @@ const signupSchema = z
     password: z.string().min(6, "كلمة المرور 6 أحرف على الأقل"),
     name: z.string().min(2, "الاسم حرفين على الأقل"),
     student_number: z.string().min(1, "رقم الهاتف مطلوب"),
-    guardian_number: z.string().optional(),
   })
   .refine(
     (data) => digitsOnly(data.student_number).length === 11,
@@ -30,7 +29,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    const { email, password, name, student_number, guardian_number } = parsed.data;
+    const { email, password, name, student_number } = parsed.data;
 
     const existing = await getUserByEmail(email);
     if (existing) {
@@ -47,7 +46,6 @@ export async function POST(request: NextRequest) {
       name,
       role: "STUDENT",
       student_number: student_number.trim(),
-      guardian_number: guardian_number?.trim() || null,
     });
 
     return NextResponse.json({ success: true });

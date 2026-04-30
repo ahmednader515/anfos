@@ -10,6 +10,13 @@ type CategoryShape = {
   name_ar?: string | null;
 } | null;
 
+type SubCategoryShape = {
+  slug?: string;
+  name?: string;
+  nameAr?: string | null;
+  name_ar?: string | null;
+} | null;
+
 export type TeacherCourseListItem = {
   id: string;
   title: string;
@@ -24,6 +31,7 @@ export type TeacherCourseListItem = {
   duration?: string | null;
   level?: string | null;
   category?: CategoryShape;
+  subcategory?: SubCategoryShape;
 };
 
 function normalizeSearch(s: string) {
@@ -39,6 +47,15 @@ function categoryLabel(cat: CategoryShape): string {
   return "بدون تصنيف";
 }
 
+function subCategoryLabel(sc: SubCategoryShape): string {
+  if (!sc) return "بدون قسم فرعي";
+  const ar = (sc.nameAr ?? sc.name_ar)?.trim();
+  if (ar) return ar;
+  const n = sc.name?.trim();
+  if (n) return n;
+  return "بدون قسم فرعي";
+}
+
 function groupCoursesByCategory(courses: TeacherCourseListItem[]) {
   const map = new Map<string, { label: string; courses: TeacherCourseListItem[] }>();
   const order: string[] = [];
@@ -46,6 +63,27 @@ function groupCoursesByCategory(courses: TeacherCourseListItem[]) {
     const cat = course.category ?? null;
     const key = cat?.slug?.trim() || "__uncategorized__";
     const label = categoryLabel(cat);
+    let entry = map.get(key);
+    if (!entry) {
+      entry = { label, courses: [] };
+      map.set(key, entry);
+      order.push(key);
+    }
+    entry.courses.push(course);
+  }
+  return order.map((slugKey) => {
+    const { label, courses: groupCourses } = map.get(slugKey)!;
+    return { slugKey, label, courses: groupCourses };
+  });
+}
+
+function groupCoursesBySubCategory(courses: TeacherCourseListItem[]) {
+  const map = new Map<string, { label: string; courses: TeacherCourseListItem[] }>();
+  const order: string[] = [];
+  for (const course of courses) {
+    const sc = course.subcategory ?? null;
+    const key = sc?.slug?.trim() || "__no_subcategory__";
+    const label = subCategoryLabel(sc);
     let entry = map.get(key);
     if (!entry) {
       entry = { label, courses: [] };
@@ -108,9 +146,12 @@ export function TeacherCoursesSearch({
   courses,
   /** عند false: شبكة واحدة (مثل «جميع الدورات») مع نفس شريط البحث */
   groupByCategory = true,
+  /** تجميع مرئي حسب القسم الفرعي (بدلاً من القسم الرئيسي) */
+  groupBySubcategory = false,
 }: {
   courses: TeacherCourseListItem[];
   groupByCategory?: boolean;
+  groupBySubcategory?: boolean;
 }) {
   const [query, setQuery] = useState("");
 
@@ -119,7 +160,10 @@ export function TeacherCoursesSearch({
     [courses, query],
   );
 
-  const groups = useMemo(() => groupCoursesByCategory(filtered), [filtered]);
+  const groups = useMemo(() => {
+    if (groupBySubcategory) return groupCoursesBySubCategory(filtered);
+    return groupCoursesByCategory(filtered);
+  }, [filtered, groupBySubcategory]);
 
   const inputId = groupByCategory ? "teacher-courses-search" : "all-courses-search";
 
@@ -153,9 +197,10 @@ export function TeacherCoursesSearch({
         <div className="space-y-12">
           {groups.map((group) => (
             <section key={group.slugKey}>
-              <h2 className="mb-4 text-xl font-semibold text-[var(--color-foreground)]">
-                {group.label}
-              </h2>
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <h2 className="text-xl font-semibold text-[var(--color-foreground)]">{group.label}</h2>
+                <div className="h-px flex-1 bg-[var(--color-border)]/70" aria-hidden />
+              </div>
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {group.courses.map((course) => (
                   <CourseCard key={course.id} course={toCourseCardProps(course)} />

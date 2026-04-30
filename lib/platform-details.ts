@@ -34,7 +34,7 @@ export const DEFAULT_PLATFORM_DETAILS_ITEMS: PlatformDetailsItem[] = [
   {
     id: "platform-detail-3",
     title: "أنشطة وفعاليات رائعة",
-    description: "تجذب الطلاب وتنشئ تفاعلهم بعد أو داخل الصف الدراسي.",
+    description: "تجذب العملاء وتنشئ تفاعلهم بعد أو داخل الصف الدراسي.",
     iconType: "preset",
     presetIcon: "bulb",
     customIconUrl: null,

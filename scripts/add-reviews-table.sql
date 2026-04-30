@@ -1,4 +1,4 @@
--- إضافة جدول تعليقات الطلاب (تشغيله في Neon SQL Editor إذا الجدول غير موجود)
+-- إضافة جدول تعليقات العملاء (تشغيله في Neon SQL Editor إذا الجدول غير موجود)
 CREATE TABLE IF NOT EXISTS "Review" (
   id             TEXT PRIMARY KEY,
   text           TEXT NOT NULL,

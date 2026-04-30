@@ -28,6 +28,26 @@ CREATE TABLE IF NOT EXISTS "Category" (
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- 2.1) الأقسام الفرعية (تعتمد على Category)
+CREATE TABLE IF NOT EXISTS "SubCategory" (
+  id            TEXT PRIMARY KEY,
+  category_id   TEXT NOT NULL REFERENCES "Category"(id) ON DELETE CASCADE,
+  parent_subcategory_id TEXT REFERENCES "SubCategory"(id) ON DELETE SET NULL,
+  name          TEXT NOT NULL,
+  name_ar       TEXT,
+  slug          TEXT NOT NULL UNIQUE,
+  description   TEXT,
+  image_url     TEXT,
+  "order"       INT NOT NULL DEFAULT 0,
+  created_by_id TEXT,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS "SubCategory_category_id_idx" ON "SubCategory"(category_id);
+CREATE INDEX IF NOT EXISTS "SubCategory_parent_id_idx" ON "SubCategory"(parent_subcategory_id);
+CREATE INDEX IF NOT EXISTS "SubCategory_created_by_id_idx" ON "SubCategory"(created_by_id);
+
 -- 3) الكورسات (تعتمد على User و Category)
 CREATE TABLE IF NOT EXISTS "Course" (
   id                  TEXT PRIMARY KEY,
@@ -44,6 +64,7 @@ CREATE TABLE IF NOT EXISTS "Course" (
   "order"             INT NOT NULL DEFAULT 0,
   max_quiz_attempts   INT,
   category_id         TEXT REFERENCES "Category"(id) ON DELETE SET NULL,
+  subcategory_id      TEXT REFERENCES "SubCategory"(id) ON DELETE SET NULL,
   created_by_id       TEXT REFERENCES "User"(id) ON DELETE SET NULL,
   created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -51,6 +72,7 @@ CREATE TABLE IF NOT EXISTS "Course" (
 
 CREATE INDEX IF NOT EXISTS "Course_slug_idx" ON "Course"(slug);
 CREATE INDEX IF NOT EXISTS "Course_category_id_idx" ON "Course"(category_id);
+CREATE INDEX IF NOT EXISTS "Course_subcategory_id_idx" ON "Course"(subcategory_id);
 CREATE INDEX IF NOT EXISTS "Course_created_by_id_idx" ON "Course"(created_by_id);
 
 -- 4) الدروس
@@ -242,7 +264,7 @@ BEGIN
   END IF;
 END $$;
 
--- 12) تعليقات الطلاب (للصفحة الرئيسية)
+-- 12) تعليقات العملاء (للصفحة الرئيسية)
 CREATE TABLE IF NOT EXISTS "Review" (
   id             TEXT PRIMARY KEY,
   text           TEXT NOT NULL,

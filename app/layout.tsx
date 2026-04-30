@@ -51,6 +51,8 @@ export default async function RootLayout({
   let footerTitle = DEFAULT_FOOTER_TITLE;
   let footerTagline = DEFAULT_FOOTER_TAGLINE;
   let footerCopyright = DEFAULT_FOOTER_COPYRIGHT;
+  let footerContactPhone: string | null = null;
+  let footerContactEmail: string | null = null;
   try {
     const settings = await getHomepageSettings();
     platformName = settings.platformName;
@@ -59,6 +61,8 @@ export default async function RootLayout({
     if (settings.footerTitle?.trim()) footerTitle = settings.footerTitle.trim();
     if (settings.footerTagline?.trim()) footerTagline = settings.footerTagline.trim();
     if (settings.footerCopyright?.trim()) footerCopyright = settings.footerCopyright.trim();
+    footerContactPhone = settings.footerContactPhone?.trim() ? settings.footerContactPhone.trim() : null;
+    footerContactEmail = settings.footerContactEmail?.trim() ? settings.footerContactEmail.trim() : null;
   } catch {
     // استخدام الافتراضي في الهيدر والفوتر
   }
@@ -124,7 +128,13 @@ export default async function RootLayout({
             platformSubscriptionExpiryLabel={platformSubscriptionExpiryLabel}
           />
           <main className="flex-1">{children}</main>
-          <Footer footerTitle={footerTitle} footerTagline={footerTagline} footerCopyright={footerCopyright} />
+          <Footer
+            footerTitle={footerTitle}
+            footerTagline={footerTagline}
+            footerCopyright={footerCopyright}
+            footerContactPhone={footerContactPhone}
+            footerContactEmail={footerContactEmail}
+          />
           </StoreSplashProvider>
         </SessionProvider>
       </body>

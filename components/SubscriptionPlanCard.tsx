@@ -52,7 +52,7 @@ export function SubscriptionPlanCard({
   plan: SubscriptionPlanCardData;
   isStudent: boolean;
   isLoggedIn: boolean;
-  /** للطالب: هل لديه اشتراك منصة نشط (أي باقة) */
+  /** للعميل: هل لديه اشتراك منصة نشط (أي باقة) */
   hasActivePlatformSubscription?: boolean;
   /** تاريخ انتهاء الاشتراك النشط (ISO) */
   activePlatformSubscriptionExpiresAtIso?: string | null;
@@ -225,7 +225,7 @@ export function SubscriptionPlanCard({
               </button>
             ) : isLoggedIn ? (
               <span className="rounded-xl bg-white/10 px-3 py-2 text-center text-[10px] text-neutral-400">
-                للطلاب فقط
+                للعملاء فقط
               </span>
             ) : (
               <Link
@@ -233,7 +233,7 @@ export function SubscriptionPlanCard({
                 className="rounded-xl px-3 py-2 text-center text-xs font-semibold text-white shadow-md transition hover:opacity-90"
                 style={{ backgroundColor: TEAL }}
               >
-                اشتر كطالب
+                اشتر كعميل
               </Link>
             )}
           </div>

@@ -15,9 +15,9 @@ datasource db {
 }
 
 enum UserRole {
-  ADMIN           // متحكم: إنشاء كورسات، متابعة طلاب، إضافة رصيد
-  ASSISTANT_ADMIN // مساعد أدمن: إنشاء كورسات ومتابعة طلاب (بدون إضافة رصيد)
-  STUDENT         // طالب: الرتبة الافتراضية عند إنشاء الحساب
+  ADMIN           // متحكم: إنشاء كورسات، متابعة عملاء، إضافة رصيد
+  ASSISTANT_ADMIN // مساعد أدمن: إنشاء كورسات ومتابعة عملاء (بدون إضافة رصيد)
+  STUDENT         // عميل: الرتبة الافتراضية عند إنشاء الحساب
   TEACHER         // مدرس: كورساته فقط، يظهر في «اختر المدرسين» عند تفعيل الميزة
 }
 
@@ -27,8 +27,8 @@ model User {
   password       String        @map("password_hash")
   name           String
   role           UserRole      @default(STUDENT)
-  balance        Decimal       @default(0) @db.Decimal(10, 2) // رصيد الطالب (يُستخدم للأدمن)
-  copyrightCode  String?       @unique @map("copyright_code") @db.VarChar(10) // كود حقوق الطبع للطالب (مثل A0125)
+  balance        Decimal       @default(0) @db.Decimal(10, 2) // رصيد العميل (يُستخدم للأدمن)
+  copyrightCode  String?       @unique @map("copyright_code") @db.VarChar(10) // كود حقوق الطبع للعميل (مثل A0125)
   teacherSubject String?       @map("teacher_subject")
   teacherAvatarUrl String?     @map("teacher_avatar_url")
   /// 1–4 = ترتيب البطاقة في الرئيسية؛ null = يُكمّل تلقائياً بعد المحددين (حتى 4)

@@ -13,12 +13,12 @@ export default async function DashboardHomeworkPage() {
   return (
     <div>
       <h2 className="text-xl font-bold text-[var(--color-foreground)]">
-        استلام واجبات الطلاب
+        استلام واجبات العملاء
       </h2>
       <p className="mt-1 text-sm text-[var(--color-muted)]">
         {isTeacher
-          ? "عرض تسليمات الواجبات من طلابك في دوراتك فقط. ابحث باسم الطالب لتصفية النتائج."
-          : "عرض تسليمات الواجبات من الطلاب حسب الدورة واسم الطالب. يمكنك البحث باسم الطالب لتصفية النتائج."}
+          ? "عرض تسليمات الواجبات من عملاءك في دوراتك فقط. ابحث باسم العميل لتصفية النتائج."
+          : "عرض تسليمات الواجبات من العملاء حسب الدورة واسم العميل. يمكنك البحث باسم العميل لتصفية النتائج."}
       </p>
       <HomeworkSubmissionsList allowDeleteAll={isStaff} />
     </div>

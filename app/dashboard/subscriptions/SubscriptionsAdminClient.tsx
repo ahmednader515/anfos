@@ -178,7 +178,7 @@ export function SubscriptionsAdminClient({
   }
 
   async function removePlan(row: AdminPlanRow) {
-    const ok = window.confirm(`حذف باقة «${row.name}»؟ قد تبقى اشتراكات الطلاب السابقة في السجلات.`);
+    const ok = window.confirm(`حذف باقة «${row.name}»؟ قد تبقى اشتراكات العملاء السابقة في السجلات.`);
     if (!ok) return;
     setError("");
     setSuccess("");
@@ -243,14 +243,14 @@ export function SubscriptionsAdminClient({
       <div>
         <h2 className="text-xl font-bold text-[var(--color-foreground)]">إنشاء اشتراكات أسبوعية أو شهرية أو سنوية</h2>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
-          الباقات تتيح للطالب شراء اشتراك لفترة محددة فيفتح له كل الكورسات المدفوعة المنشورة دون شراء كل كورس. عند انتهاء المدة يعود الوصول كالمعتاد حتى التجديد.
+          الباقات تتيح للعميل شراء اشتراك لفترة محددة فيفتح له كل الكورسات المدفوعة المنشورة دون شراء كل كورس. عند انتهاء المدة يعود الوصول كالمعتاد حتى التجديد.
         </p>
       </div>
 
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]">
         <h3 className="text-lg font-semibold text-[var(--color-foreground)]">ظهور قسم الاشتراكات في الموقع</h3>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
-          عند التفعيل يظهر في الصفحة الرئيسية قسم «الاشتراكات المتاحة» بنفس أسلوب عنوان «اختر المدرسين». عند الإيقاف يختفي القسم ولا يمكن للطلاب شراء باقات جديدة من الصفحة الرئيسية.
+          عند التفعيل يظهر في الصفحة الرئيسية قسم «الاشتراكات المتاحة» بنفس أسلوب عنوان «اختر المدرسين». عند الإيقاف يختفي القسم ولا يمكن للعملاء شراء باقات جديدة من الصفحة الرئيسية.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <button
@@ -305,7 +305,7 @@ export function SubscriptionsAdminClient({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--color-foreground)]">السعر (ج.م) — يُخصم من رصيد الطالب</label>
+            <label className="block text-sm font-medium text-[var(--color-foreground)]">السعر (ج.م) — يُخصم من رصيد العميل</label>
             <input
               required
               type="text"

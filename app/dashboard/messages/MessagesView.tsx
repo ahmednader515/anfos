@@ -124,7 +124,7 @@ export function MessagesView({
         setConversations((prev) => {
           const has = prev.some((c) => c.id === conv.id);
           if (has) return prev;
-          const name = students.find((s) => s.id === studentId)?.name ?? "طالب";
+          const name = students.find((s) => s.id === studentId)?.name ?? "عميل";
           return [{ id: conv.id, studentName: name, ...conv }, ...prev];
         });
       }
@@ -237,7 +237,7 @@ export function MessagesView({
 
   const currentTitle = selectedConversationId
     ? isStaff
-      ? conversations.find((c) => c.id === selectedConversationId)?.studentName ?? students.find((s) => s.id === selectedStudentId)?.name ?? "طالب"
+      ? conversations.find((c) => c.id === selectedConversationId)?.studentName ?? students.find((s) => s.id === selectedStudentId)?.name ?? "عميل"
       : (() => {
           const conv = conversations.find((c) => c.id === selectedConversationId);
           if (conv?.staffRole) return staffRoleToLabel(conv.staffRole);
@@ -255,7 +255,7 @@ export function MessagesView({
               type="search"
               value={studentSearch}
               onChange={(e) => setStudentSearch(e.target.value)}
-              placeholder="بحث عن اسم الطالب..."
+              placeholder="بحث عن اسم العميل..."
               className="mb-3 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm placeholder:text-[var(--color-muted)]"
             />
             <ul className="max-h-[420px] space-y-1 overflow-y-auto">
@@ -308,7 +308,7 @@ export function MessagesView({
       <div className="flex min-h-[400px] flex-col rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)]">
         {!selectedConversationId ? (
           <div className="flex flex-1 items-center justify-center text-[var(--color-muted)]">
-            {isStaff ? "اختر طالباً لبدء المحادثة" : "اختر محادثة لعرض الرسائل"}
+            {isStaff ? "اختر عميلاً لبدء المحادثة" : "اختر محادثة لعرض الرسائل"}
           </div>
         ) : (
           <>

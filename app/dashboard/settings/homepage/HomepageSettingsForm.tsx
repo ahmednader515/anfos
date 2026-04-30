@@ -126,6 +126,7 @@ export function HomepageSettingsForm({
     pageTitle: initialSettings.pageTitle ?? "",
     whatsappUrl: initialSettings.whatsappUrl ?? "",
     facebookUrl: initialSettings.facebookUrl ?? "",
+    youtubeUrl: initialSettings.youtubeUrl ?? "",
     heroBgPreset: (initialSettings.heroBgPreset as HeroBgPreset) || "navy",
     heroBgUseCustom: initialHeroBg.useCustom,
     heroBgCustomFrom: initialHeroBg.from,
@@ -157,6 +158,8 @@ export function HomepageSettingsForm({
     footerTitle: initialSettings.footerTitle ?? "",
     footerTagline: initialSettings.footerTagline ?? "",
     footerCopyright: initialSettings.footerCopyright ?? "",
+    footerContactPhone: initialSettings.footerContactPhone ?? "",
+    footerContactEmail: initialSettings.footerContactEmail ?? "",
     reviewsSectionTitle: initialSettings.reviewsSectionTitle ?? "",
     reviewsSectionSubtitle: initialSettings.reviewsSectionSubtitle ?? "",
     ctaBadgeText: initialSettings.ctaBadgeText ?? "",
@@ -317,6 +320,7 @@ export function HomepageSettingsForm({
           pageTitle: form.pageTitle.trim() || null,
           whatsappUrl: form.whatsappUrl.trim() || null,
           facebookUrl: form.facebookUrl.trim() || null,
+          youtubeUrl: form.youtubeUrl.trim() || null,
           heroBgPreset: form.heroBgPreset || null,
           heroBgCustomFrom: form.heroBgUseCustom ? customFromNorm : null,
           heroBgCustomTo: form.heroBgUseCustom ? customToNorm : null,
@@ -345,6 +349,8 @@ export function HomepageSettingsForm({
           footerTitle: form.footerTitle.trim() || null,
           footerTagline: form.footerTagline.trim() || null,
           footerCopyright: form.footerCopyright.trim() || null,
+          footerContactPhone: form.footerContactPhone.trim() || null,
+          footerContactEmail: form.footerContactEmail.trim() || null,
           reviewsSectionTitle: form.reviewsSectionTitle.trim() || null,
           reviewsSectionSubtitle: form.reviewsSectionSubtitle.trim() || null,
           ctaBadgeText: form.ctaBadgeText.trim() || null,
@@ -497,7 +503,7 @@ export function HomepageSettingsForm({
                 value={form.hero3Subtitle}
                 onChange={(e) => setForm((f) => ({ ...f, hero3Subtitle: e.target.value }))}
                 maxLength={600}
-                placeholder="انضم لأكثر من مليون طالب مع الخطة"
+                placeholder="انضم لأكثر من مليون عميل مع الخطة"
                 className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
               />
             </div>
@@ -1222,6 +1228,34 @@ export function HomepageSettingsForm({
             />
             <p className="mt-1 text-xs text-[var(--color-muted)]">يُعرض كـ: © السنة الحالية ثم النص أعلاه.</p>
           </div>
+          <div className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] p-4">
+            <p className="mb-3 text-sm font-semibold text-[var(--color-foreground)]">بيانات التواصل في الفوتر</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-foreground)]">رقم الهاتف</label>
+                <input
+                  type="text"
+                  value={form.footerContactPhone}
+                  onChange={(e) => setForm((f) => ({ ...f, footerContactPhone: e.target.value }))}
+                  className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                  placeholder="01023005622"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-foreground)]">البريد الإلكتروني</label>
+                <input
+                  type="email"
+                  value={form.footerContactEmail}
+                  onChange={(e) => setForm((f) => ({ ...f, footerContactEmail: e.target.value }))}
+                  className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                  placeholder="support@example.com"
+                />
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-[var(--color-muted)]">
+              اتركهما فارغين لإخفاء قسم التواصل من الفوتر.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -1480,7 +1514,7 @@ export function HomepageSettingsForm({
       </div>
 
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
-        <h3 className="mb-4 text-lg font-semibold text-[var(--color-foreground)]">قسم تعليقات الطلاب (الصفحة الرئيسية)</h3>
+        <h3 className="mb-4 text-lg font-semibold text-[var(--color-foreground)]">قسم تعليقات العملاء (الصفحة الرئيسية)</h3>
         <p className="mb-3 text-sm text-[var(--color-muted)]">
           العنوان والوصف فوق بطاقات التعليقات في الصفحة الرئيسية. اترك الحقل فارغاً لاستخدام النص الافتراضي.
         </p>
@@ -1493,7 +1527,7 @@ export function HomepageSettingsForm({
               onChange={(e) => setForm((f) => ({ ...f, reviewsSectionTitle: e.target.value }))}
               maxLength={400}
               className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-[var(--color-foreground)]"
-              placeholder="ماذا يقول الطلاب"
+              placeholder="ماذا يقول العملاء"
             />
           </div>
           <div>
@@ -1504,7 +1538,7 @@ export function HomepageSettingsForm({
               onChange={(e) => setForm((f) => ({ ...f, reviewsSectionSubtitle: e.target.value }))}
               maxLength={400}
               className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-[var(--color-foreground)]"
-              placeholder="تجارب حقيقية من طلاب المنصة"
+              placeholder="تجارب حقيقية من عملاء المنصة"
             />
           </div>
         </div>
@@ -1513,7 +1547,7 @@ export function HomepageSettingsForm({
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
         <h3 className="mb-4 text-lg font-semibold text-[var(--color-foreground)]">الجزء الإخباري في المنصة</h3>
         <p className="mb-3 text-sm text-[var(--color-muted)]">
-          يظهر هذا القسم في الصفحة الرئيسية أسفل «ماذا يقول الطلاب» عند التفعيل. يمكنك إضافة عدة أخبار؛ التبديل
+          يظهر هذا القسم في الصفحة الرئيسية أسفل «ماذا يقول العملاء» عند التفعيل. يمكنك إضافة عدة أخبار؛ التبديل
           التلقائي كل 5 ثوانٍ عند وجود أكثر من خبر.
         </p>
         <div className="mb-4 flex items-center gap-3">
@@ -1691,6 +1725,17 @@ export function HomepageSettingsForm({
           رابط واحد لواتساب ورابط واحد لفيسبوك فقط (أزرار ثابتة أسفل يمين الصفحة). اترك الحقل فارغاً لإخفاء الزر من الصفحة.
         </p>
         <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-foreground)]">رابط يوتيوب</label>
+            <input
+              type="url"
+              value={form.youtubeUrl}
+              onChange={(e) => setForm((f) => ({ ...f, youtubeUrl: e.target.value }))}
+              className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+              placeholder="https://www.youtube.com/@..."
+            />
+            <p className="mt-1 text-xs text-[var(--color-muted)]">فارغ = عدم عرض زر يوتيوب.</p>
+          </div>
           <div>
             <label className="block text-sm font-medium text-[var(--color-foreground)]">رابط واتساب</label>
             <input

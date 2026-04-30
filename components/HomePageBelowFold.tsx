@@ -10,9 +10,9 @@ import {
   selectTeachersForHomepagePreview,
   userHasActivePlatformSubscription,
   getLatestPlatformSubscriptionExpiry,
+  getSubCategoriesPublicByParent,
 } from "@/lib/db";
 import type { HomepageSetting } from "@/lib/types";
-import { CourseCard } from "@/components/CourseCard";
 import { HomeTeachersSection } from "@/components/HomeTeachersSection";
 import { HomeSubscriptionsSection } from "@/components/HomeSubscriptionsSection";
 import { HomeStoreSection } from "@/components/HomeStoreSection";
@@ -20,8 +20,10 @@ import { HomePlatformDetailsSection } from "@/components/HomePlatformDetailsSect
 import { parsePlatformDetailsItems } from "@/lib/platform-details";
 import { parsePlatformNewsItems } from "@/lib/platform-news";
 import { HomePlatformNewsSlider } from "@/components/HomePlatformNewsSlider";
+import { RevealOnScroll } from "@/components/RevealOnScroll";
 
 type CourseWithCategory = Awaited<ReturnType<typeof getCoursesPublished>>[number];
+type SubCategoryRow = Awaited<ReturnType<typeof getSubCategoriesPublicByParent>>[number];
 
 export async function HomePageBelowFold({
   homepageSettings,
@@ -36,6 +38,7 @@ export async function HomePageBelowFold({
   let teachersForHome: Awaited<ReturnType<typeof listTeachersForHomepage>> = [];
   let subscriptionPlansHome: Awaited<ReturnType<typeof listActiveSubscriptionPlansPublic>> = [];
   let storeProductsHome: Awaited<ReturnType<typeof listStoreProductsPublic>> = [];
+  let subCategories: SubCategoryRow[] = [];
 
   if (homepageSettings.teachersEnabled) {
     try {
@@ -83,6 +86,12 @@ export async function HomePageBelowFold({
     // لا قاعدة بيانات أو غير متصلة
   }
 
+  try {
+    subCategories = await getSubCategoriesPublicByParent({ parentSubCategoryId: null });
+  } catch {
+    subCategories = [];
+  }
+
   if (homepageSettings.teachersEnabled && teachersForHome.length > 0) {
     const teacherAccountIds = new Set(teachersForHome.map((t) => t.id));
     courses = courses.filter((c) => {
@@ -112,31 +121,25 @@ export async function HomePageBelowFold({
         })
       : [];
 
-  const categoryIdToCourses = new Map<string, CourseWithCategory[]>();
-  const uncategorized: CourseWithCategory[] = [];
-  for (const c of courses) {
-    const catId = (c as { category?: { id?: string } }).category?.id;
-    if (catId) {
-      if (!categoryIdToCourses.has(catId)) categoryIdToCourses.set(catId, []);
-      categoryIdToCourses.get(catId)!.push(c);
-    } else {
-      uncategorized.push(c);
-    }
+  const categoryIdToSubCategories = new Map<string, SubCategoryRow[]>();
+  for (const sc of subCategories) {
+    const cid =
+      String((sc as { categoryId?: unknown }).categoryId ?? (sc as { category_id?: unknown }).category_id ?? "").trim();
+    if (!cid) continue;
+    if (!categoryIdToSubCategories.has(cid)) categoryIdToSubCategories.set(cid, []);
+    categoryIdToSubCategories.get(cid)!.push(sc);
   }
 
-  const sections: { title: string; slug?: string; courses: CourseWithCategory[] }[] = [];
+  const sections: { title: string; slug?: string; subcategories: SubCategoryRow[] }[] = [];
   for (const cat of categories) {
-    const list = categoryIdToCourses.get(cat.id);
-    if (list?.length) {
+    const list = categoryIdToSubCategories.get(cat.id) ?? [];
+    if (list.length > 0) {
       sections.push({
         title: (cat as { nameAr?: string | null }).nameAr ?? cat.name,
         slug: cat.slug,
-        courses: list,
+        subcategories: list,
       });
     }
-  }
-  if (uncategorized.length > 0) {
-    sections.push({ title: "دورات أخرى", courses: uncategorized });
   }
 
   const platformDetailsItems = parsePlatformDetailsItems(homepageSettings.platformDetailsItems);
@@ -144,16 +147,20 @@ export async function HomePageBelowFold({
   return (
     <>
       {homepageSettings.platformDetailsEnabled && platformDetailsItems.length > 0 ? (
-        <HomePlatformDetailsSection
-          title={homepageSettings.platformDetailsTitle?.trim() || "“قلم” الحل المثالي!"}
-          subtitle={homepageSettings.platformDetailsSubtitle?.trim() || null}
-          backgroundColor={homepageSettings.platformDetailsBackgroundColor?.trim() || null}
-          items={platformDetailsItems}
-        />
+        <RevealOnScroll>
+          <HomePlatformDetailsSection
+            title={homepageSettings.platformDetailsTitle?.trim() || "“قلم” الحل المثالي!"}
+            subtitle={homepageSettings.platformDetailsSubtitle?.trim() || null}
+            backgroundColor={homepageSettings.platformDetailsBackgroundColor?.trim() || null}
+            items={platformDetailsItems}
+          />
+        </RevealOnScroll>
       ) : null}
 
       {homepageSettings.teachersEnabled ? (
-        <HomeTeachersSection enabled initialTeachers={teachersHomePreview} />
+        <RevealOnScroll delayMs={50}>
+          <HomeTeachersSection enabled initialTeachers={teachersHomePreview} />
+        </RevealOnScroll>
       ) : null}
 
       {homepageSettings.teachersEnabled && homepageSettings.subscriptionsEnabled ? (
@@ -161,73 +168,125 @@ export async function HomePageBelowFold({
       ) : null}
 
       {homepageSettings.subscriptionsEnabled ? (
-        <HomeSubscriptionsSection
-          enabled
-          plans={subscriptionPlansHome}
-          isStudent={session?.user?.role === "STUDENT"}
-          isLoggedIn={!!session}
-          studentPlatformSubscription={studentPlatformSubscription}
-        />
+        <RevealOnScroll delayMs={80}>
+          <HomeSubscriptionsSection
+            enabled
+            plans={subscriptionPlansHome}
+            isStudent={session?.user?.role === "STUDENT"}
+            isLoggedIn={!!session}
+            studentPlatformSubscription={studentPlatformSubscription}
+          />
+        </RevealOnScroll>
       ) : null}
 
       {sections.length > 0
         ? sections.map((section, idx) => (
-            <section
-              key={section.slug ?? `uncategorized-${idx}`}
-              className="bg-white dark:bg-[var(--color-background)] mx-auto max-w-6xl px-4 py-16 sm:px-6"
-            >
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-[var(--color-foreground)]">{section.title}</h2>
-                  <p className="mt-1 text-[var(--color-muted)]">
-                    {section.slug ? `دورات قسم ${section.title}` : "دورات بدون تصنيف"}
-                  </p>
-                </div>
+            <RevealOnScroll key={section.slug ?? `uncategorized-${idx}`}>
+              <section className="bg-white dark:bg-[var(--color-background)] mx-auto max-w-6xl px-4 py-16 sm:px-6">
+              <div className="relative flex items-center justify-center">
+                <h2 className="text-center text-2xl font-extrabold text-[var(--color-foreground)] sm:text-3xl">
+                  {section.title}
+                </h2>
                 <Link
                   href={section.slug ? `/courses?category=${encodeURIComponent(section.slug)}` : "/courses"}
-                  className="text-sm font-medium text-[var(--color-primary)] hover:underline"
+                  className="absolute left-0 text-sm font-medium text-[var(--color-primary)] hover:underline"
                 >
                   عرض الكل ←
                 </Link>
               </div>
+              <p className="mt-2 text-center text-sm text-[var(--color-muted)] sm:text-base">
+                {section.slug ? `دورات قسم ${section.title}` : "دورات بدون تصنيف"}
+              </p>
 
-              <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {section.courses.slice(0, 6).map((course) => (
-                  <CourseCard key={course.id} course={course} />
-                ))}
+              <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {section.subcategories.slice(0, 8).map((sc) => {
+                  const title =
+                    String((sc as { nameAr?: unknown }).nameAr ?? (sc as { name_ar?: unknown }).name_ar ?? sc.name ?? "").trim();
+                  const scSlug = String((sc as { slug?: unknown }).slug ?? "").trim();
+                  const href = scSlug ? `/courses?subcategory=${encodeURIComponent(scSlug)}` : "/courses";
+                  const img =
+                    (sc as { imageUrl?: string | null }).imageUrl ??
+                    (sc as { image_url?: string | null }).image_url ??
+                    null;
+
+                  return (
+                    <Link
+                      key={String((sc as { id?: unknown }).id ?? "")}
+                      href={href}
+                      className="group relative block overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] transition hover:shadow-[var(--shadow-hover)]"
+                    >
+                      <div className="aspect-[16/10] w-full bg-black/5">
+                        {img ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={img}
+                            alt=""
+                            className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[var(--color-primary)]/20 to-[var(--color-primary-light)]/30">
+                            <span className="text-4xl opacity-60">📚</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div
+                        className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-emerald-900/80 via-emerald-900/35 to-transparent"
+                        aria-hidden
+                      />
+
+                      <div className="absolute inset-x-0 bottom-0 z-10 p-3">
+                        <div className="flex items-end justify-between gap-3">
+                          <p className="min-w-0 truncate text-sm font-extrabold text-white drop-shadow sm:text-base">
+                            {title}
+                          </p>
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/25 bg-black/10 text-lg font-bold leading-none text-white drop-shadow transition group-hover:bg-black/20">
+                            ←
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
-              {section.courses.length > 6 && (
+              {section.subcategories.length > 8 && (
                 <div className="mt-6 text-center">
                   <Link
                     href={section.slug ? `/courses?category=${encodeURIComponent(section.slug)}` : "/courses"}
                     className="text-sm font-medium text-[var(--color-primary)] hover:underline"
                   >
-                    عرض كل دورات القسم ({section.courses.length})
+                    عرض كل الأقسام الفرعية ({section.subcategories.length})
                   </Link>
                 </div>
               )}
-            </section>
+              </section>
+            </RevealOnScroll>
           ))
         : null}
 
       {homepageSettings.storeEnabled && storeProductsHome.length > 0 ? (
-        <HomeStoreSection
-          productsCount={storeProductsHome.length}
-          sectionTitle={homepageSettings.storeSectionTitle?.trim() || "متجر المنصة"}
-          sectionDescription={
-            homepageSettings.storeSectionDescription?.trim() ||
-            "مرحبًا بك في متجر المنصة الذي يضم ملازم وكتب في غاية الأهمية. اختر ما يناسبك من المواد الرقمية التعليمية واستفد من محتوى مُنظّم يدعم رحلتك الدراسية."
-          }
-        />
+        <RevealOnScroll>
+          <HomeStoreSection
+            productsCount={storeProductsHome.length}
+            sectionTitle={homepageSettings.storeSectionTitle?.trim() || "متجر المنصة"}
+            sectionDescription={
+              homepageSettings.storeSectionDescription?.trim() ||
+              "مرحبًا بك في متجر المنصة الذي يضم ملازم وكتب في غاية الأهمية. اختر ما يناسبك من المواد الرقمية التعليمية واستفد من محتوى مُنظّم يدعم رحلتك الدراسية."
+            }
+          />
+        </RevealOnScroll>
       ) : null}
 
-      <section className="reviews-section border-t border-[var(--color-border)] bg-[var(--color-reviews-bg)] px-4 py-16 sm:px-6">
-        <div className="mx-auto max-w-6xl">
+      <RevealOnScroll>
+        <section className="reviews-section border-t border-[var(--color-border)] bg-[var(--color-reviews-bg)] px-4 py-16 sm:px-6">
+          <div className="mx-auto max-w-6xl">
           <h2 className="text-2xl font-bold text-[var(--color-foreground)]">
-            {homepageSettings.reviewsSectionTitle?.trim() || "ماذا يقول الطلاب"}
+            {homepageSettings.reviewsSectionTitle?.trim() || "ماذا يقول العملاء"}
           </h2>
           <p className="mt-1 text-[var(--color-muted)]">
-            {homepageSettings.reviewsSectionSubtitle?.trim() || "تجارب حقيقية من طلاب المنصة"}
+            {homepageSettings.reviewsSectionSubtitle?.trim() || "تجارب حقيقية من عملاء المنصة"}
           </p>
           {reviews.length > 0 ? (
             <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -256,24 +315,28 @@ export async function HomePageBelowFold({
           ) : (
             <p className="mt-10 text-center text-[var(--color-muted)]">لا توجد تعليقات حتى الآن.</p>
           )}
-        </div>
-      </section>
+          </div>
+        </section>
+      </RevealOnScroll>
 
       {showPlatformNewsSection ? (
-        <section className="border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-12 sm:px-6">
-          <div className="mx-auto max-w-6xl">
+        <RevealOnScroll>
+          <section className="border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-12 sm:px-6">
+            <div className="mx-auto max-w-6xl">
             <h2 className="mb-6 text-2xl font-bold text-[var(--color-foreground)]">
               {homepageSettings.platformNewsSectionTitle?.trim() || "أخبار المنصة"}
             </h2>
             <HomePlatformNewsSlider items={platformNewsSlides} />
-          </div>
-        </section>
+            </div>
+          </section>
+        </RevealOnScroll>
       ) : null}
 
-      <section className="border-t border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] p-8 sm:p-12">
-            <div className="text-center">
+      <RevealOnScroll>
+        <section className="border-t border-[var(--color-border)] bg-[var(--color-surface)]">
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] p-8 sm:p-12">
+              <div className="text-center">
               <p className="inline-flex items-center rounded-full border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 px-4 py-1 text-xs font-semibold text-[var(--color-primary)] sm:text-sm">
                 {homepageSettings.ctaBadgeText?.trim() || "انطلاقة تعليمية أقوى"}
               </p>
@@ -303,36 +366,58 @@ export async function HomePageBelowFold({
               >
                 {homepageSettings.ctaButtonText?.trim() || "ابدأ رحلتك الآن"}
               </Link>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </RevealOnScroll>
 
-      {homepageSettings.facebookUrl?.trim() ? (
-        <a
-          href={homepageSettings.facebookUrl.trim()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed bottom-24 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-lg transition hover:scale-110 hover:shadow-xl"
-          aria-label="صفحتنا على فيسبوك"
-        >
-          <svg className="h-9 w-9" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-          </svg>
-        </a>
-      ) : null}
-      {homepageSettings.whatsappUrl?.trim() ? (
-        <a
-          href={homepageSettings.whatsappUrl.trim()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-110 hover:shadow-xl"
-          aria-label="تواصل عبر واتساب"
-        >
-          <svg className="h-9 w-9" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-          </svg>
-        </a>
+      {homepageSettings.youtubeUrl?.trim() ||
+      homepageSettings.facebookUrl?.trim() ||
+      homepageSettings.whatsappUrl?.trim() ? (
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
+          {homepageSettings.youtubeUrl?.trim() ? (
+            <a
+              href={homepageSettings.youtubeUrl.trim()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FF0000] text-white shadow-lg transition hover:scale-110 hover:shadow-xl"
+              aria-label="قناتنا على يوتيوب"
+            >
+              <svg className="h-9 w-9" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8ZM9.6 15.5V8.5L15.9 12l-6.3 3.5Z" />
+              </svg>
+            </a>
+          ) : null}
+
+          {homepageSettings.facebookUrl?.trim() ? (
+            <a
+              href={homepageSettings.facebookUrl.trim()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-lg transition hover:scale-110 hover:shadow-xl"
+              aria-label="صفحتنا على فيسبوك"
+            >
+              <svg className="h-9 w-9" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+              </svg>
+            </a>
+          ) : null}
+
+          {homepageSettings.whatsappUrl?.trim() ? (
+            <a
+              href={homepageSettings.whatsappUrl.trim()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-110 hover:shadow-xl"
+              aria-label="تواصل عبر واتساب"
+            >
+              <svg className="h-9 w-9" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+              </svg>
+            </a>
+          ) : null}
+        </div>
       ) : null}
     </>
   );

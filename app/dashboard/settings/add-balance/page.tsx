@@ -15,7 +15,7 @@ export default async function DashboardAddBalanceSettingsPage() {
     <div>
       <h2 className="text-xl font-bold text-[var(--color-foreground)]">تعديل طرق الدفع في صفحة إضافة الرصيد</h2>
       <p className="mt-1 text-sm text-[var(--color-muted)]">
-        من هنا يمكنك تعديل كل ما يظهر للطالب في صفحة إضافة الرصيد: الرقم الذي يحوّل عليه، النصوص، ورقم واتساب استقبال صورة التأكيد.
+        من هنا يمكنك تعديل كل ما يظهر للعميل في صفحة إضافة الرصيد: الرقم الذي يحوّل عليه، النصوص، ورقم واتساب استقبال صورة التأكيد.
       </p>
       <AddBalanceSettingsForm initialSettings={settings} />
     </div>

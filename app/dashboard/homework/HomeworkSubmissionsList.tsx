@@ -152,7 +152,7 @@ export function HomeworkSubmissionsList({ allowDeleteAll = true }: { allowDelete
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="بحث باسم الطالب..."
+          placeholder="بحث باسم العميل..."
           className="min-w-[200px] rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm"
         />
         <button
@@ -224,7 +224,7 @@ export function HomeworkSubmissionsList({ allowDeleteAll = true }: { allowDelete
                 </th>
                 <th className="p-3 text-right font-medium text-[var(--color-foreground)]">الدورة</th>
                 <th className="p-3 text-right font-medium text-[var(--color-foreground)]">الحصة</th>
-                <th className="p-3 text-right font-medium text-[var(--color-foreground)]">الطالب</th>
+                <th className="p-3 text-right font-medium text-[var(--color-foreground)]">العميل</th>
                 <th className="p-3 text-right font-medium text-[var(--color-foreground)]">نوع التسليم</th>
                 <th className="p-3 text-right font-medium text-[var(--color-foreground)]">الرابط / الملف</th>
                 <th className="p-3 text-right font-medium text-[var(--color-foreground)]">التاريخ</th>

@@ -19,7 +19,6 @@ type Student = {
   role: string;
   balance: number;
   student_number?: string | null;
-  guardian_number?: string | null;
   copyright_code?: string | null;
   _count: { enrollments: number };
   enrollments: Enrollment[];
@@ -48,7 +47,6 @@ export function StudentsList({
   const [editRole, setEditRole] = useState("");
   const [editPassword, setEditPassword] = useState("");
   const [editStudentNumber, setEditStudentNumber] = useState("");
-  const [editGuardianNumber, setEditGuardianNumber] = useState("");
   const [coursesStudent, setCoursesStudent] = useState<Student | null>(null);
   const [addCourseId, setAddCourseId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -63,7 +61,6 @@ export function StudentsList({
         s.name.toLowerCase().includes(q) ||
         s.email.toLowerCase().includes(q) ||
         (s.student_number ?? "").toLowerCase().includes(q) ||
-        (s.guardian_number ?? "").toLowerCase().includes(q) ||
         (s.copyright_code ?? "").toLowerCase().includes(q)
     );
   }, [initialStudents, search]);
@@ -75,7 +72,6 @@ export function StudentsList({
     setEditRole(s.role);
     setEditPassword("");
     setEditStudentNumber(s.student_number ?? "");
-    setEditGuardianNumber(s.guardian_number ?? "");
     setError("");
   }
 
@@ -84,10 +80,9 @@ export function StudentsList({
     if (!editStudent) return;
     setError("");
     setLoading(true);
-    const payload: { name?: string; email?: string; role?: string; password?: string; student_number?: string | null; guardian_number?: string | null } = {
+    const payload: { name?: string; email?: string; role?: string; password?: string; student_number?: string | null } = {
       name: editName.trim(),
       student_number: editStudentNumber.trim() || null,
-      guardian_number: editGuardianNumber.trim() || null,
     };
     if (canEditFullProfile) {
       payload.email = editEmail.trim();
@@ -179,7 +174,7 @@ export function StudentsList({
     <div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-[var(--color-foreground)]">
-          بحث بالاسم أو البريد أو رقم الطالب أو ولي الأمر أو كود حقوق الطبع والنشر
+          بحث بالاسم أو البريد أو رقم العميل أو كود حقوق الطبع والنشر
         </label>
         <input
           type="text"
@@ -195,8 +190,7 @@ export function StudentsList({
             <tr className="border-b border-[var(--color-border)] bg-[var(--color-background)]/50">
               <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">الاسم</th>
               <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">البريد</th>
-              <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">رقم الطالب</th>
-              <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">رقم ولي الأمر</th>
+              <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">رقم العميل</th>
               <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">كود حقوق الطبع والنشر</th>
               <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">رصيد</th>
               <th className="p-3 text-sm font-semibold text-[var(--color-foreground)]">الدورات</th>
@@ -215,7 +209,6 @@ export function StudentsList({
                 <td className="p-3 font-medium text-[var(--color-foreground)]">{s.name}</td>
                 <td className="p-3 text-[var(--color-muted)]">{s.email}</td>
                 <td className="p-3 text-[var(--color-foreground)]">{s.student_number ?? "—"}</td>
-                <td className="p-3 text-[var(--color-foreground)]">{s.guardian_number ?? "—"}</td>
                 <td className="p-3 font-mono text-sm text-[var(--color-foreground)]">{s.copyright_code ?? "—"}</td>
                 <td className="p-3">{Number(s.balance).toFixed(2)} ج.م</td>
                 <td className="p-3">{s._count.enrollments}</td>
@@ -251,14 +244,14 @@ export function StudentsList({
       </div>
       {filtered.length === 0 && (
         <p className="mt-4 text-center text-[var(--color-muted)]">
-          {search.trim() ? "لا توجد نتائج للبحث." : "لا يوجد طلاب مسجلون بعد."}
+          {search.trim() ? "لا توجد نتائج للبحث." : "لا يوجد عملاء مسجلون بعد."}
         </p>
       )}
 
       {coursesStudent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-lg rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-lg">
-            <h3 className="text-lg font-semibold text-[var(--color-foreground)]">إدارة دورات الطالب — {coursesStudent.name}</h3>
+            <h3 className="text-lg font-semibold text-[var(--color-foreground)]">إدارة دورات العميل — {coursesStudent.name}</h3>
             {enrollError && (
               <p className="mt-2 text-sm text-red-600 dark:text-red-400">{enrollError}</p>
             )}
@@ -324,7 +317,7 @@ export function StudentsList({
       {editStudent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-lg">
-            <h3 className="text-lg font-semibold text-[var(--color-foreground)]">تعديل بيانات الطالب</h3>
+            <h3 className="text-lg font-semibold text-[var(--color-foreground)]">تعديل بيانات العميل</h3>
             <form onSubmit={handleSaveEdit} className="mt-4 space-y-3">
               {error && (
                 <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
@@ -333,7 +326,7 @@ export function StudentsList({
                 <p className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm text-[var(--color-muted)]">
                   <span className="font-medium text-[var(--color-foreground)]">كود حقوق الطبع والنشر:</span>{" "}
                   <span className="font-mono font-semibold text-[var(--color-primary)]">{editStudent.copyright_code}</span>
-                  <span className="mr-2 block text-xs">يُعرض على مشغّل الحصص للطالب ولا يُعدّل من هنا.</span>
+                  <span className="mr-2 block text-xs">يُعرض على مشغّل الحصص للعميل ولا يُعدّل من هنا.</span>
                 </p>
               ) : null}
               <div>
@@ -347,23 +340,13 @@ export function StudentsList({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--color-foreground)]">رقم الطالب</label>
+                <label className="block text-sm font-medium text-[var(--color-foreground)]">رقم العميل</label>
                 <input
                   type="text"
                   value={editStudentNumber}
                   onChange={(e) => setEditStudentNumber(e.target.value)}
                   className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-                  placeholder="رقم الطالب"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-foreground)]">رقم ولي الأمر</label>
-                <input
-                  type="text"
-                  value={editGuardianNumber}
-                  onChange={(e) => setEditGuardianNumber(e.target.value)}
-                  className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-                  placeholder="رقم ولي الأمر"
+                  placeholder="رقم العميل"
                 />
               </div>
               <div>
@@ -397,7 +380,7 @@ export function StudentsList({
                       onChange={(e) => setEditRole(e.target.value)}
                       className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
                     >
-                      <option value="STUDENT">طالب</option>
+                      <option value="STUDENT">عميل</option>
                       <option value="ASSISTANT_ADMIN">مساعد أدمن</option>
                       <option value="ADMIN">أدمن</option>
                     </select>

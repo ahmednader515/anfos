@@ -47,7 +47,6 @@ export default async function StudentsPage() {
     role: s.role,
     balance: Number(s.balance),
     student_number: s.student_number ?? null,
-    guardian_number: s.guardian_number ?? null,
     copyright_code: (row.copyright_code as string | null | undefined) ?? (s as { copyright_code?: string | null }).copyright_code ?? null,
     _count: { enrollments: enrollmentsByUser[i].length },
     enrollments: enrollmentsByUser[i].map((e) => ({
@@ -71,7 +70,7 @@ export default async function StudentsPage() {
   return (
     <div>
       <h2 className="mb-6 text-xl font-bold text-[var(--color-foreground)]">
-        {isAdmin ? "الطلاب والحسابات" : "قائمة الطلاب"}
+        {isAdmin ? "العملاء والحسابات" : "قائمة العملاء"}
       </h2>
       {isAdmin && (
         <StaffAccountsSection
@@ -81,7 +80,7 @@ export default async function StudentsPage() {
       )}
       <div className={isAdmin ? "mt-8" : ""}>
         <h3 className="mb-4 text-lg font-semibold text-[var(--color-foreground)]">
-          قائمة الطلاب
+          قائمة العملاء
         </h3>
         <StudentsList
           students={students}

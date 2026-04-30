@@ -6,7 +6,7 @@ import { getCourseById, getEnrollment, getUserById, createEnrollment, updateUser
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "STUDENT") {
-    return NextResponse.json({ error: "يجب تسجيل الدخول كطالب" }, { status: 403 });
+    return NextResponse.json({ error: "يجب تسجيل الدخول كعميل" }, { status: 403 });
   }
 
   const { searchParams } = new URL(request.url);

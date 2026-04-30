@@ -314,14 +314,14 @@ export function StoreAdminClient({
   }
 
   async function removePurchase(row: AdminPurchaseRow) {
-    if (!window.confirm(`إزالة المنتج «${row.productTitle}» من مشتريات الطالب ${row.studentName}؟`)) return;
+    if (!window.confirm(`إزالة المنتج «${row.productTitle}» من مشتريات العميل ${row.studentName}؟`)) return;
     const res = await fetch(`/api/dashboard/store-purchases/${encodeURIComponent(row.purchaseId)}`, {
       method: "DELETE",
       credentials: "include",
     });
     if (!res.ok) return;
     await reloadPurchases();
-    setSuccess("تم حذف المنتج من مشتريات الطالب");
+    setSuccess("تم حذف المنتج من مشتريات العميل");
     router.refresh();
   }
 
@@ -334,7 +334,7 @@ export function StoreAdminClient({
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
         <h2 className="text-xl font-bold text-[var(--color-foreground)]">متجر المنصة</h2>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
-          إضافة ملازم وكتب PDF وبيعها للطلاب. النصوص التالية تظهر في بطاقة المتجر على الصفحة الرئيسية عند تفعيل المتجر ووجود منتجات.
+          إضافة ملازم وكتب PDF وبيعها للعملاء. النصوص التالية تظهر في بطاقة المتجر على الصفحة الرئيسية عند تفعيل المتجر ووجود منتجات.
         </p>
         <form onSubmit={(e) => void saveHomeStoreCopy(e)} className="mt-5 space-y-3 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] p-4">
           <p className="text-sm font-semibold text-[var(--color-foreground)]">الظهور في الصفحة الرئيسية</p>
@@ -375,7 +375,7 @@ export function StoreAdminClient({
           <p className="mt-1 text-2xl font-bold text-[var(--color-foreground)]">{stats.purchasesCount}</p>
         </div>
         <div className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-          <p className="text-xs text-[var(--color-muted)]">عدد الطلاب المشترين</p>
+          <p className="text-xs text-[var(--color-muted)]">عدد العملاء المشترين</p>
           <p className="mt-1 text-2xl font-bold text-[var(--color-foreground)]">{stats.buyersCount}</p>
         </div>
         <div className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
@@ -391,7 +391,7 @@ export function StoreAdminClient({
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
         <h3 className="text-lg font-semibold text-[var(--color-foreground)]">أرباح منتجات المتجر</h3>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
-          يُحسب الربح من الفرق بين السعر المدفوع فعليًا وتكلفة الوحدة المسجّلة لكل منتج. اشتراكات الطلاب النشطة تُسجّل غالبًا بسعر مدفوع 0.
+          يُحسب الربح من الفرق بين السعر المدفوع فعليًا وتكلفة الوحدة المسجّلة لكل منتج. اشتراكات العملاء النشطة تُسجّل غالبًا بسعر مدفوع 0.
         </p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] p-4">
@@ -585,11 +585,11 @@ export function StoreAdminClient({
 
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h3 className="text-lg font-semibold text-[var(--color-foreground)]">الطلاب الذين اشتروا من المتجر</h3>
+          <h3 className="text-lg font-semibold text-[var(--color-foreground)]">العملاء الذين اشتروا من المتجر</h3>
           <input
             value={searchStudent}
             onChange={(e) => setSearchStudent(e.target.value)}
-            placeholder="ابحث عن الطالب بالاسم أو البريد..."
+            placeholder="ابحث عن العميل بالاسم أو البريد..."
             className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm sm:max-w-sm"
           />
         </div>
@@ -597,7 +597,7 @@ export function StoreAdminClient({
           <table className="min-w-full text-right text-sm">
             <thead>
               <tr className="border-b border-[var(--color-border)] text-[var(--color-muted)]">
-                <th className="px-3 py-2 font-medium">الطالب</th>
+                <th className="px-3 py-2 font-medium">العميل</th>
                 <th className="px-3 py-2 font-medium">البريد</th>
                 <th className="px-3 py-2 font-medium">المنتج</th>
                 <th className="px-3 py-2 font-medium">السعر المدفوع</th>
@@ -621,7 +621,7 @@ export function StoreAdminClient({
                         onClick={() => void removePurchase(row)}
                         className="rounded-[var(--radius-btn)] border border-red-500/40 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-500/10"
                       >
-                        إزالة المنتج من الطالب
+                        إزالة المنتج من العميل
                       </button>
                     </td>
                   </tr>

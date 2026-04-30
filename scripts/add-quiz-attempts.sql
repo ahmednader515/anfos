@@ -1,4 +1,4 @@
--- تشغيل هذا الملف على قاعدة البيانات (Neon) لإضافة دعم حد محاولات الاختبار وإحصائيات الطلاب.
+-- تشغيل هذا الملف على قاعدة البيانات (Neon) لإضافة دعم حد محاولات الاختبار وإحصائيات العملاء.
 -- نفّذ المحتوى من لوحة Neon (SQL Editor) أو عبر: psql $DATABASE_URL -f scripts/add-quiz-attempts.sql
 
 -- إضافة عمود حد المحاولات للكورس (null = غير محدود)
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "QuizAttempt" (
 CREATE INDEX IF NOT EXISTS "QuizAttempt_user_quiz_idx" ON "QuizAttempt"(user_id, quiz_id);
 CREATE INDEX IF NOT EXISTS "QuizAttempt_user_id_idx" ON "QuizAttempt"(user_id);
 
--- جدول المدفوعات (رصيد مدفوع من الطلاب للتسجيل في الكورسات — لإجمالي أرباح المنصة)
+-- جدول المدفوعات (رصيد مدفوع من العملاء للتسجيل في الكورسات — لإجمالي أرباح المنصة)
 CREATE TABLE IF NOT EXISTS "Payment" (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,

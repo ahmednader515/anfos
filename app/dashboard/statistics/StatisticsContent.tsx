@@ -76,7 +76,7 @@ export default function StatisticsContent({
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-xl font-bold text-[var(--color-foreground)]">
-          إحصائيات الطلاب{titleSuffix ? ` ${titleSuffix}` : ""}
+          إحصائيات العملاء{titleSuffix ? ` ${titleSuffix}` : ""}
         </h2>
         <Link
           href="/dashboard"
@@ -89,27 +89,27 @@ export default function StatisticsContent({
       {/* بحث بالاسم */}
       <div className="mb-6">
         <label htmlFor="student-search" className="mb-2 block text-sm font-medium text-[var(--color-foreground)]">
-          البحث عن طالب
+          البحث عن عميل
         </label>
         <input
           id="student-search"
           type="search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="اسم الطالب أو البريد الإلكتروني..."
+          placeholder="اسم العميل أو البريد الإلكتروني..."
           className="w-full max-w-md rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-2 text-[var(--color-foreground)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]"
           dir="rtl"
         />
         {trimmed && (
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            عرض {filteredStudentsWithDetails.length} طالب، {filteredAttempts.length} محاولة اختبار
+            عرض {filteredStudentsWithDetails.length} عميل، {filteredAttempts.length} محاولة اختبار
           </p>
         )}
       </div>
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-          <p className="text-sm text-[var(--color-muted)]">عدد الطلاب</p>
+          <p className="text-sm text-[var(--color-muted)]">عدد العملاء</p>
           <p className="text-2xl font-bold text-[var(--color-foreground)]">{studentsCount}</p>
         </div>
         <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
@@ -123,7 +123,7 @@ export default function StatisticsContent({
         <div className="rounded-[var(--radius-card)] border border-[var(--color-primary)]/30 bg-[var(--color-primary-light)]/20 p-4">
           <p className="text-sm text-[var(--color-muted)]">إجمالي أرباح المنصة</p>
           <p className="text-2xl font-bold text-[var(--color-primary)]">{totalEarnings.toFixed(2)} ج.م</p>
-          <p className="mt-1 text-xs text-[var(--color-muted)]">من رصيد مدفوع من الطلاب للتسجيل في الكورسات</p>
+          <p className="mt-1 text-xs text-[var(--color-muted)]">من رصيد مدفوع من العملاء للتسجيل في الكورسات</p>
         </div>
       </div>
 
@@ -140,7 +140,7 @@ export default function StatisticsContent({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--color-border)]">
-                  <th className="pb-2 text-right font-medium text-[var(--color-foreground)]">الطالب</th>
+                  <th className="pb-2 text-right font-medium text-[var(--color-foreground)]">العميل</th>
                   <th className="pb-2 text-right font-medium text-[var(--color-foreground)]">البريد</th>
                   <th className="pb-2 text-right font-medium text-[var(--color-foreground)]">الكورس</th>
                   <th className="pb-2 text-right font-medium text-[var(--color-foreground)]">الاختبار</th>
@@ -169,11 +169,11 @@ export default function StatisticsContent({
 
       <section className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
         <h3 className="mb-4 text-lg font-semibold text-[var(--color-foreground)]">
-          الطلاب والتسجيلات
+          العملاء والتسجيلات
         </h3>
         {filteredStudentsWithDetails.length === 0 ? (
           <p className="text-sm text-[var(--color-muted)]">
-            {trimmed ? "لا توجد نتائج تطابق البحث." : "لا يوجد طلاب مسجّلون."}
+            {trimmed ? "لا توجد نتائج تطابق البحث." : "لا يوجد عملاء مسجّلون."}
           </p>
         ) : (
           <ul className="space-y-4">

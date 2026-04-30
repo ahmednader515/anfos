@@ -8,13 +8,13 @@ type UserRow = { id: string; name: string | null; email: string | null; role: st
 const roleLabel: Record<string, string> = {
   ADMIN: "أدمن",
   ASSISTANT_ADMIN: "مساعد أدمن",
-  STUDENT: "طالب",
+  STUDENT: "عميل",
 };
 
 const ROLES = [
   { value: "ADMIN", label: "أدمن" },
   { value: "ASSISTANT_ADMIN", label: "مساعد أدمن" },
-  { value: "STUDENT", label: "طالب" },
+  { value: "STUDENT", label: "عميل" },
 ] as const;
 
 export function StaffAccountsSection({

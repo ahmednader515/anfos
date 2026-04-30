@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getReviews } from "@/lib/db";
 
-/** جلب تعليقات الطلاب للصفحة الرئيسية (عام) */
+/** جلب تعليقات العملاء للصفحة الرئيسية (عام) */
 export async function GET() {
   try {
     const reviews = await getReviews();

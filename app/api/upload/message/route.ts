@@ -7,7 +7,7 @@ const MAX_FILE = 10 * 1024 * 1024; // 10 MB
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const ALLOWED_EXT = ["pdf", "jpg", "jpeg", "png", "webp", "gif", "doc", "docx", "xls", "xlsx"];
 
-/** رفع صورة أو ملف للرسائل — لأي مستخدم مسجّل (أدمن / مساعد / طالب) */
+/** رفع صورة أو ملف للرسائل — لأي مستخدم مسجّل (أدمن / مساعد / عميل) */
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {

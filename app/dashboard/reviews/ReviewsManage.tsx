@@ -190,7 +190,7 @@ export function ReviewsManage() {
                 value={form.authorTitle}
                 onChange={(e) => setForm((f) => ({ ...f, authorTitle: e.target.value }))}
                 className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-                placeholder="طالب — دورة البرمجة"
+                placeholder="عميل — دورة البرمجة"
               />
             </div>
           </div>

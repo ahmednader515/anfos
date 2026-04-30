@@ -88,7 +88,7 @@ export default async function HomePage() {
       ) : heroTemplate === "coming_soon" ? (
         <HomeHeroTemplateThree
           title={homepageSettings.hero3Title?.trim() || "المنصة الشاملة رقم 1"}
-          subtitle={homepageSettings.hero3Subtitle?.trim() || "انضم لأكثر من مليون طالب مع الخطة"}
+          subtitle={homepageSettings.hero3Subtitle?.trim() || "انضم لأكثر من مليون عميل مع الخطة"}
           phoneImageUrl={homepageSettings.hero3PhoneImageUrl?.trim() || null}
           phoneBgColor={homepageSettings.hero3PhoneBgColor?.trim() || "#FACC15"}
           badge1ImageUrl={homepageSettings.hero3StoreBadge1ImageUrl?.trim() || null}

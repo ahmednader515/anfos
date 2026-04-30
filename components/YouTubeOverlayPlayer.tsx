@@ -61,7 +61,7 @@ function formatTime(seconds: number): string {
 type Props = {
   videoUrl: string;
   title: string;
-  /** للطلاب: كود حقوق الطبع والنشر — يظهر على المشغّل ويتحرك كل دقيقة */
+  /** للعملاء: كود حقوق الطبع والنشر — يظهر على المشغّل ويتحرك كل دقيقة */
   studentCopyrightCode?: string | null;
 };
 

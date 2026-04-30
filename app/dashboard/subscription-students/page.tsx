@@ -42,7 +42,7 @@ export default async function SubscriptionStudentsPage() {
         >
           ← العودة للوحة التحكم
         </Link>
-        <h2 className="mt-4 text-xl font-bold text-[var(--color-foreground)]">إدارة الطلاب المشتركين</h2>
+        <h2 className="mt-4 text-xl font-bold text-[var(--color-foreground)]">إدارة العملاء المشتركين</h2>
         <p className="mt-2 max-w-3xl text-sm text-[var(--color-muted)]">
           عرض من اشترك في باقات المنصة، وتعديل تاريخ انتهاء الاشتراك، أو حذف السجل (يُلغي الوصول الفوري عند الحذف أو عند
           جعل التاريخ في الماضي).

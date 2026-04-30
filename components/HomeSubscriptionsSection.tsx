@@ -14,7 +14,7 @@ export function HomeSubscriptionsSection({
   plans: SubscriptionPlanCardData[];
   isStudent: boolean;
   isLoggedIn: boolean;
-  /** اشتراك منصة نشط للطالب الحالي (إن وُجد) */
+  /** اشتراك منصة نشط للعميل الحالي (إن وُجد) */
   studentPlatformSubscription?: { active: boolean; expiresAtIso: string | null } | null;
 }) {
   if (!enabled) return null;

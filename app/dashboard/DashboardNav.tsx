@@ -49,10 +49,10 @@ export function DashboardNav({
         <NavLink href="/dashboard/courses/new" exact>
           إنشاء دورة
         </NavLink>
-        <NavLink href="/dashboard/statistics">إحصائيات الطلاب</NavLink>
+        <NavLink href="/dashboard/statistics">إحصائيات العملاء</NavLink>
         <NavLink href="/dashboard/codes">إنشاء الأكواد</NavLink>
-        <NavLink href="/dashboard/homework">واجبات الطلاب</NavLink>
-        <NavLink href="/dashboard/messages">تواصل مع طلابي</NavLink>
+        <NavLink href="/dashboard/homework">واجبات العملاء</NavLink>
+        <NavLink href="/dashboard/messages">تواصل مع عملاءي</NavLink>
         <NavLink href="/dashboard/live-streams">البثوث المباشرة</NavLink>
       </>
     );
@@ -77,10 +77,10 @@ export function DashboardNav({
   return (
     <>
       <NavLink href="/dashboard/students">
-        {isAdmin ? "الطلاب والحسابات" : "الطلاب"}
+        {isAdmin ? "العملاء والحسابات" : "العملاء"}
       </NavLink>
       <NavLink href="/dashboard/statistics">
-        إحصائيات الطلاب
+        إحصائيات العملاء
       </NavLink>
       {(isAdmin || isAssistant) && (
         <NavLink href="/dashboard/password-change-requests">
@@ -94,12 +94,17 @@ export function DashboardNav({
       )}
       {(isAdmin || isAssistant) && (
         <NavLink href="/dashboard/homework">
-          واجبات الطلاب
+          واجبات العملاء
         </NavLink>
       )}
       {(isAdmin || isAssistant) && (
         <NavLink href="/dashboard/messages">
           تواصل خاص مع الطلبة
+        </NavLink>
+      )}
+      {(isAdmin || isAssistant || isTeacher) && (
+        <NavLink href="/dashboard/categories">
+          الأقسام والأقسام الفرعية
         </NavLink>
       )}
       {isAdmin && (
@@ -111,20 +116,20 @@ export function DashboardNav({
             إنشاء دورة
           </NavLink>
           <NavLink href="/dashboard/reviews">
-            تعليقات الطلاب
+            تعليقات العملاء
           </NavLink>
           <NavLink href="/dashboard/settings/homepage">
             إعدادات الصفحة الرئيسية
           </NavLink>
           <NavLink href="/dashboard/settings/add-balance">
-            تعديل طرق الدفع للطالب
+            تعديل طرق الدفع للعميل
           </NavLink>
           <NavLink href="/dashboard/live-streams">
             البثوث المباشرة
           </NavLink>
           <NavLink href="/dashboard/teachers">تعدد المدرسين</NavLink>
           <NavLink href="/dashboard/subscriptions">إنشاء اشتراكات المنصة</NavLink>
-          <NavLink href="/dashboard/subscription-students">الطلاب المشتركين</NavLink>
+          <NavLink href="/dashboard/subscription-students">العملاء المشتركين</NavLink>
           <NavLink href="/dashboard/store">متجر المنصة</NavLink>
         </>
       )}

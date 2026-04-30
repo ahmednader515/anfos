@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   if (session.user.role !== "STUDENT") {
-    return NextResponse.json({ error: "الشراء متاح للطلاب فقط" }, { status: 403 });
+    return NextResponse.json({ error: "الشراء متاح للعملاء فقط" }, { status: 403 });
   }
 
   let body: { productId?: string };

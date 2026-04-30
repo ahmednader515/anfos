@@ -80,7 +80,6 @@ export async function POST(request: NextRequest) {
       name,
       role: "TEACHER",
       student_number,
-      guardian_number: null,
       teacher_subject,
       teacher_avatar_url,
     });

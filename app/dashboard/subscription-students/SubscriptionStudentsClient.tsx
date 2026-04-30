@@ -144,7 +144,7 @@ export function SubscriptionStudentsClient({
         <table className="min-w-full text-right text-sm">
           <thead>
             <tr className="border-b border-[var(--color-border)] text-[var(--color-muted)]">
-              <th className="px-3 py-3 font-medium">الطالب</th>
+              <th className="px-3 py-3 font-medium">العميل</th>
               <th className="px-3 py-3 font-medium">البريد</th>
               <th className="px-3 py-3 font-medium">الباقة</th>
               <th className="px-3 py-3 font-medium">المبلغ</th>
@@ -238,7 +238,7 @@ export function SubscriptionStudentsClient({
                   className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-[var(--color-foreground)]"
                 />
                 <p className="mt-1 text-xs text-[var(--color-muted)]">
-                  ضع تاريخاً في الماضي لإلغاء سريع لوصول الطالب للكورسات المدفوعة عبر هذا السجل.
+                  ضع تاريخاً في الماضي لإلغاء سريع لوصول العميل للكورسات المدفوعة عبر هذا السجل.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -277,7 +277,7 @@ export function SubscriptionStudentsClient({
           >
             <h3 className="text-lg font-semibold text-[var(--color-foreground)]">حذف سجل الاشتراك؟</h3>
             <p className="mt-2 text-sm text-[var(--color-muted)]">
-              سيتم إزالة هذا السجل نهائياً. الطالب قد يفقد الوصول الفوري للكورسات المدفوعة إن لم يكن لديه تسجيل أو اشتراك
+              سيتم إزالة هذا السجل نهائياً. العميل قد يفقد الوصول الفوري للكورسات المدفوعة إن لم يكن لديه تسجيل أو اشتراك
               آخر.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">

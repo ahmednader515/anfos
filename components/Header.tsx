@@ -24,7 +24,7 @@ function UserMenu() {
   const roleLabel: Record<UserRole, string> = {
     ADMIN: "أدمن",
     ASSISTANT_ADMIN: "مساعد الأدمن",
-    STUDENT: "طالب",
+    STUDENT: "عميل",
     TEACHER: "مدرس",
   };
 
@@ -85,7 +85,7 @@ export function Header({
 }: {
   platformName?: string | null;
   headerLogoUrl?: string | null;
-  /** للطالب ذي اشتراك منصة نشط: نص تاريخ انتهاء الاشتراك (مُنسَّق من السيرفر) */
+  /** للعميل ذي اشتراك منصة نشط: نص تاريخ انتهاء الاشتراك (مُنسَّق من السيرفر) */
   platformSubscriptionExpiryLabel?: string | null;
 }) {
   const { data: session, status } = useSession();

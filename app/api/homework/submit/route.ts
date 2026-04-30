@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getCourseById, getLessonById, getEnrollment, createHomeworkSubmission, hasFullCourseAccessAsStudent } from "@/lib/db";
 
-/** تسليم واجب — للطالب المسجّل: إما مرتبط بحصة (lessonId) أو بالكورس (courseId) قديماً */
+/** تسليم واجب — للعميل المسجّل: إما مرتبط بحصة (lessonId) أو بالكورس (courseId) قديماً */
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "STUDENT") {

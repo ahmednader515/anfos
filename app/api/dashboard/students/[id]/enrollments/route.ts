@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getUserById, getCourseById, getEnrollment, createEnrollment } from "@/lib/db";
 
-/** إضافة طالب إلى دورة (بدون خصم رصيد) - للأدمن فقط */
+/** إضافة عميل إلى دورة (بدون خصم رصيد) - للأدمن فقط */
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -28,7 +28,7 @@ export async function POST(
 
   const user = await getUserById(userId);
   if (!user) {
-    return NextResponse.json({ error: "الطالب غير موجود" }, { status: 404 });
+    return NextResponse.json({ error: "العميل غير موجود" }, { status: 404 });
   }
 
   const course = await getCourseById(courseId);
@@ -38,7 +38,7 @@ export async function POST(
 
   const existing = await getEnrollment(userId, courseId);
   if (existing) {
-    return NextResponse.json({ error: "الطالب مسجّل في هذه الدورة مسبقاً" }, { status: 400 });
+    return NextResponse.json({ error: "العميل مسجّل في هذه الدورة مسبقاً" }, { status: 400 });
   }
 
   await createEnrollment(userId, courseId);

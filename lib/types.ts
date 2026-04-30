@@ -18,7 +18,7 @@ export interface User {
   teacher_avatar_url?: string | null;
   /** 1–4 لترتيب البطاقة في الرئيسية؛ null = تلقائي بعد المحددين */
   teacher_homepage_order?: number | null;
-  /** كود حقوق الطبع والنشر — للطلاب فقط، فريد، يظهر على مشغّل الحصص */
+  /** كود حقوق الطبع والنشر — للعملاء فقط، فريد، يظهر على مشغّل الحصص */
   copyright_code?: string | null;
   current_session_id?: string | null;
   created_at: Date;
@@ -35,6 +35,21 @@ export interface Category {
   order: number;
   /** من أنشأ القسم (بعد rowToCamel من قاعدة البيانات) */
   createdById?: string | null;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface SubCategory {
+  id: string;
+  category_id: string;
+  parent_subcategory_id?: string | null;
+  name: string;
+  name_ar: string | null;
+  slug: string;
+  description: string | null;
+  image_url: string | null;
+  order: number;
+  created_by_id?: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -109,6 +124,7 @@ export interface HomepageSetting {
   primaryColor?: string | null;
   whatsappUrl: string | null;
   facebookUrl: string | null;
+  youtubeUrl?: string | null;
   pageTitle: string | null;
   heroBgPreset: HeroBgPreset | string | null;
   /** لون أعلى التدرج المخصّص (#RRGGBB) — يُستخدم مع heroBgCustomTo عند صلاحيتهما */
@@ -155,7 +171,11 @@ export interface HomepageSetting {
   footerTagline: string | null;
   /** نص حقوق النشر — يظهر بعد © والسنة (السنة تُضاف تلقائياً) */
   footerCopyright: string | null;
-  /** عنوان قسم تعليقات الطلاب في الصفحة الرئيسية */
+  /** رقم الهاتف في «تواصل معنا» بالفوتر */
+  footerContactPhone?: string | null;
+  /** البريد الإلكتروني في «تواصل معنا» بالفوتر */
+  footerContactEmail?: string | null;
+  /** عنوان قسم تعليقات العملاء في الصفحة الرئيسية */
   reviewsSectionTitle: string | null;
   /** وصف قصير تحت عنوان قسم التعليقات */
   reviewsSectionSubtitle: string | null;
@@ -187,13 +207,13 @@ export interface HomepageSetting {
   platformDetailsBackgroundColor?: string | null;
   /** عناصر القسم (JSON) */
   platformDetailsItems?: string | null;
-  /** عند true يظهر قسم الأخبار أسفل «ماذا يقول الطلاب» */
+  /** عند true يظهر قسم الأخبار أسفل «ماذا يقول العملاء» */
   platformNewsEnabled?: boolean;
   /** شرائح الأخبار (JSON: PlatformNewsItem[]) */
   platformNewsItems?: string | null;
   /** عنوان قسم الأخبار في الصفحة الرئيسية */
   platformNewsSectionTitle?: string | null;
-  /** عنوان صفحة إضافة الرصيد للطالب */
+  /** عنوان صفحة إضافة الرصيد للعميل */
   addBalanceTitle?: string | null;
   /** وصف أعلى صفحة إضافة الرصيد */
   addBalanceSubtitle?: string | null;
@@ -218,7 +238,7 @@ export interface StoreProduct {
   title: string;
   description: string;
   price: number;
-  /** تكلفة الوحدة للأدمن — للإحصائيات فقط، لا تُعرض للطلاب في المتجر العام */
+  /** تكلفة الوحدة للأدمن — للإحصائيات فقط، لا تُعرض للعملاء في المتجر العام */
   costPrice: number;
   imageUrl: string | null;
   pdfUrl: string | null;
@@ -243,13 +263,14 @@ export interface Course {
   is_published: boolean;
   order: number;
   category_id: string | null;
+  subcategory_id?: string | null;
   created_by_id: string | null;
   accepts_homework?: boolean;
   created_at: Date;
   updated_at: Date;
 }
 
-/** تسليم واجب من طالب (لحصة أو للكورس قديماً) */
+/** تسليم واجب من عميل (لحصة أو للكورس قديماً) */
 export interface HomeworkSubmission {
   id: string;
   course_id: string;
@@ -316,7 +337,7 @@ export interface Enrollment {
   enrolled_at: Date;
 }
 
-/** كود تفعيل مجاني لدورة — للأدمن إنشاؤه وللطالب تفعيله */
+/** كود تفعيل مجاني لدورة — للأدمن إنشاؤه وللعميل تفعيله */
 export interface ActivationCode {
   id: string;
   course_id: string;
@@ -357,10 +378,12 @@ export interface CourseApp {
   isPublished?: boolean;
   order?: number;
   categoryId?: string | null;
+  subcategoryId?: string | null;
   createdById?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
   category?: { id: string; name: string; nameAr?: string | null; slug: string } | null;
+  subcategory?: { id: string; name: string; nameAr?: string | null; slug: string; categoryId: string } | null;
 }
 
 export interface LessonApp {
@@ -403,7 +426,7 @@ export interface QuestionOptionApp {
   questionId: string;
 }
 
-/** محادثة بين موظف (أدمن/مساعد) وطالب */
+/** محادثة بين موظف (أدمن/مساعد) وعميل */
 export interface Conversation {
   id: string;
   staffUserId: string;

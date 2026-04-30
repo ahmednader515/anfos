@@ -8,7 +8,7 @@ const MAX_IMAGE = 5 * 1024 * 1024;
 const PDF_TYPE = "application/pdf";
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
-/** رفع ملف واجب (PDF أو صورة) — للطالب المسجّل فقط */
+/** رفع ملف واجب (PDF أو صورة) — للعميل المسجّل فقط */
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "STUDENT") {

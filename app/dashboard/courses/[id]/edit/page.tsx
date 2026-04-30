@@ -8,7 +8,7 @@ import { EditCourseForm, type ContentOrderEntry } from "./EditCourseForm";
 
 type Props = { params: Promise<{ id: string }> };
 
-/** ترتيب الحصص والاختبارات كما يُعرض للطالب (حسب حقل order في الجدول) */
+/** ترتيب الحصص والاختبارات كما يُعرض للعميل (حسب حقل order في الجدول) */
 function initialContentOrderFromRows(
   lessonRows: Record<string, unknown>[],
   quizRows: Record<string, unknown>[]
@@ -66,6 +66,7 @@ export default async function EditCoursePage({ params }: Props) {
     isPublished: Boolean(c.isPublished ?? c.is_published ?? true),
     maxQuizAttempts: typeof c.maxQuizAttempts === "number" ? c.maxQuizAttempts : typeof c.max_quiz_attempts === "number" ? c.max_quiz_attempts : null,
     categoryId: (c.categoryId ?? c.category_id ?? "") as string,
+    subcategoryId: (c.subcategoryId ?? c.subcategory_id ?? "") as string,
     lessons: data.lessons.map((l) => {
       const row = l as Record<string, unknown>;
       return {

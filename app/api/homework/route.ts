@@ -11,7 +11,7 @@ import {
   deleteAllHomeworkSubmissions,
 } from "@/lib/db";
 
-/** قائمة تسليمات الواجبات — أدمن: الكل مع بحث باسم الطالب؛ طالب: تسليماته لدورة معيّنة */
+/** قائمة تسليمات الواجبات — أدمن: الكل مع بحث باسم العميل؛ عميل: تسليماته لدورة معيّنة */
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
