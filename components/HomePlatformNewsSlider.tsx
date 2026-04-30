@@ -38,8 +38,8 @@ export function HomePlatformNewsSlider({ items }: { items: PlatformNewsItem[] })
   const goNext = () => setActive((prev) => (prev + 1) % slides.length);
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-black/5 shadow-[var(--shadow-card)]">
-      <div className="relative aspect-[16/9] w-full min-h-[200px] sm:min-h-[280px]">
+    <div className="relative w-full">
+      <div className="relative aspect-[16/9] w-full min-h-[200px] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-black/5 shadow-[var(--shadow-card)] sm:min-h-[280px]">
         {slides.map((slide, idx) => (
           <img
             key={slide.id}
@@ -51,22 +51,6 @@ export function HomePlatformNewsSlider({ items }: { items: PlatformNewsItem[] })
             aria-hidden={idx !== active}
           />
         ))}
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-2/5 bg-gradient-to-t from-black/75 via-black/35 to-transparent"
-          aria-hidden
-        />
-        <div className="absolute inset-x-0 bottom-0 z-20 p-4 pb-10 sm:p-6 sm:pb-12">
-          {slides.map((slide, idx) => (
-            <p
-              key={slide.id}
-              className={`text-lg font-bold leading-snug text-white drop-shadow sm:text-xl ${
-                idx === active ? "block" : "hidden"
-              }`}
-            >
-              {slide.text}
-            </p>
-          ))}
-        </div>
 
         {canSlide ? (
           <>
@@ -116,6 +100,21 @@ export function HomePlatformNewsSlider({ items }: { items: PlatformNewsItem[] })
             ))}
           </div>
         ) : null}
+      </div>
+
+      <div className="relative z-10 -mt-6 px-3 sm:-mt-8 sm:px-6">
+        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-5 shadow-[var(--shadow-card)] sm:px-6 sm:py-6">
+        {slides.map((slide, idx) => (
+          <p
+            key={slide.id}
+            className={`text-base font-bold leading-relaxed text-[var(--color-foreground)] sm:text-lg ${
+              idx === active ? "block" : "hidden"
+            }`}
+          >
+            {slide.text}
+          </p>
+        ))}
+        </div>
       </div>
     </div>
   );
