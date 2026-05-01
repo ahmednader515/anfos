@@ -103,11 +103,11 @@ export function HomePlatformNewsSlider({ items }: { items: PlatformNewsItem[] })
       </div>
 
       <div className="relative z-10 -mt-6 px-3 sm:-mt-8 sm:px-6">
-        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-5 shadow-[var(--shadow-card)] sm:px-6 sm:py-6">
+        <div className="min-w-0 max-w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-5 shadow-[var(--shadow-card)] sm:px-6 sm:py-6">
         {slides.map((slide, idx) => (
           <p
             key={slide.id}
-            className={`text-base font-bold leading-relaxed text-[var(--color-foreground)] sm:text-lg ${
+            className={`min-w-0 max-w-full whitespace-normal break-words text-pretty [overflow-wrap:anywhere] text-base font-bold leading-relaxed text-[var(--color-foreground)] sm:text-lg ${
               idx === active ? "block" : "hidden"
             }`}
           >

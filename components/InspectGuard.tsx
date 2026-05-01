@@ -35,8 +35,18 @@ export function InspectGuard() {
     let checkInterval: ReturnType<typeof setInterval> | null = null;
     const threshold = 160;
     function checkDevTools() {
-      const widthDiff = window.outerWidth - window.innerWidth;
-      const heightDiff = window.outerHeight - window.innerHeight;
+      const innerW = window.innerWidth;
+      const innerH = window.innerHeight;
+      const widthDiff = window.outerWidth - innerW;
+      const heightDiff = window.outerHeight - innerH;
+
+      // Chrome responsive mode often makes `outerWidth - innerWidth` huge even when DevTools isn't "open"
+      // in the sense of docked panels. In that case, rely on vertical chrome UI deltas instead.
+      if (innerW <= 480) {
+        if (heightDiff > threshold) setDevToolsOpen(true);
+        return;
+      }
+
       if (widthDiff > threshold || heightDiff > threshold) {
         setDevToolsOpen(true);
       }

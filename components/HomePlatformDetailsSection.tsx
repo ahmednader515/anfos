@@ -44,7 +44,7 @@ export function HomePlatformDetailsSection({
           {title}
         </h2>
         {subtitle?.trim() ? (
-          <p className="mx-auto mt-3 max-w-2xl text-center text-sm text-[var(--color-muted)] sm:text-base">
+          <p className="mx-auto mt-3 max-w-2xl whitespace-normal break-words text-pretty text-center text-sm [overflow-wrap:anywhere] text-[var(--color-muted)] sm:text-base">
             {subtitle}
           </p>
         ) : null}
@@ -52,7 +52,7 @@ export function HomePlatformDetailsSection({
           {items.map((item) => (
             <article
               key={item.id}
-              className="group rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-background)] p-5 text-center shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-hover)]"
+              className="group w-full min-w-0 overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-background)] p-5 text-center shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-hover)]"
             >
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-primary)]/25 bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
                 {item.iconType === "upload" && item.customIconUrl ? (
@@ -62,7 +62,9 @@ export function HomePlatformDetailsSection({
                 )}
               </div>
               <h3 className="mt-4 text-base font-bold text-[var(--color-foreground)]">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--color-muted)]">{item.description}</p>
+              <p className="mt-2 whitespace-normal break-words text-pretty text-sm leading-6 [overflow-wrap:anywhere] text-[var(--color-muted)]">
+                {item.description}
+              </p>
             </article>
           ))}
         </div>

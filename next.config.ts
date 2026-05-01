@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   images: {
     /** أحجام أصغر من الافتراضي (حتى 3840px) لتسريع التحويل وتحميل الهيرو */
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    // Next.js 16+: any `quality` passed to `<Image />` must be listed here (defaults to [75]).
+    qualities: [65, 72, 75],
     remotePatterns: [
       {
         protocol: "https",

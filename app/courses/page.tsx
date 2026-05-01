@@ -105,7 +105,7 @@ export default async function CoursesPage({ searchParams }: Props) {
       : "اختر الدورة المناسبة وابدأ التعلم خطوة بخطوة";
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div className="mx-auto min-w-0 max-w-6xl px-4 py-12 sm:px-6">
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-[var(--color-foreground)]">{pageTitle}</h1>
         <p className="mt-2 text-[var(--color-muted)]">{pageSubtitle}</p>
@@ -114,7 +114,7 @@ export default async function CoursesPage({ searchParams }: Props) {
       {subcategorySlug?.trim() && childSubCategories.length > 0 ? (
         <section className="mb-10">
           <h2 className="mb-4 text-lg font-semibold text-[var(--color-foreground)]">الأقسام الفرعية</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid w-full min-w-0 gap-3 [grid-template-columns:repeat(2,minmax(0,1fr))] sm:gap-4 lg:[grid-template-columns:repeat(4,minmax(0,1fr))]">
             {childSubCategories.slice(0, 12).map((sc) => {
               const title = String((sc as { nameAr?: unknown }).nameAr ?? (sc as { name_ar?: unknown }).name_ar ?? sc.name ?? "").trim();
               const scSlug = String((sc as { slug?: unknown }).slug ?? "").trim();
@@ -127,7 +127,7 @@ export default async function CoursesPage({ searchParams }: Props) {
                 <Link
                   key={String((sc as { id?: unknown }).id ?? "")}
                   href={href}
-                  className="group relative block overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] transition hover:shadow-[var(--shadow-hover)]"
+                  className="group relative block min-w-0 max-w-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] transition hover:shadow-[var(--shadow-hover)]"
                 >
                   <div className="aspect-[16/10] w-full bg-black/5">
                     {img ? (

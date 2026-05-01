@@ -182,7 +182,7 @@ export async function HomePageBelowFold({
       {sections.length > 0
         ? sections.map((section, idx) => (
             <RevealOnScroll key={section.slug ?? `uncategorized-${idx}`}>
-              <section className="bg-white dark:bg-[var(--color-background)] mx-auto max-w-6xl px-4 py-16 sm:px-6">
+              <section className="mx-auto min-w-0 max-w-6xl bg-white px-4 py-16 dark:bg-[var(--color-background)] sm:px-6">
               <div className="relative flex items-center justify-center">
                 <h2 className="text-center text-2xl font-extrabold text-[var(--color-foreground)] sm:text-3xl">
                   {section.title}
@@ -198,7 +198,7 @@ export async function HomePageBelowFold({
                 {section.slug ? `دورات قسم ${section.title}` : "دورات بدون تصنيف"}
               </p>
 
-              <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-8 grid w-full min-w-0 gap-3 [grid-template-columns:repeat(2,minmax(0,1fr))] sm:gap-4 lg:[grid-template-columns:repeat(4,minmax(0,1fr))]">
                 {section.subcategories.slice(0, 8).map((sc) => {
                   const title =
                     String((sc as { nameAr?: unknown }).nameAr ?? (sc as { name_ar?: unknown }).name_ar ?? sc.name ?? "").trim();
@@ -213,7 +213,7 @@ export async function HomePageBelowFold({
                     <Link
                       key={String((sc as { id?: unknown }).id ?? "")}
                       href={href}
-                      className="group relative block overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] transition hover:shadow-[var(--shadow-hover)]"
+                      className="group relative block min-w-0 max-w-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] transition hover:shadow-[var(--shadow-hover)]"
                     >
                       <div className="aspect-[16/10] w-full bg-black/5">
                         {img ? (
@@ -375,16 +375,16 @@ export async function HomePageBelowFold({
       {homepageSettings.youtubeUrl?.trim() ||
       homepageSettings.facebookUrl?.trim() ||
       homepageSettings.whatsappUrl?.trim() ? (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
+        <div className="fixed bottom-4 left-4 z-50 flex flex-col items-center gap-2 sm:bottom-5 sm:left-5">
           {homepageSettings.youtubeUrl?.trim() ? (
             <a
               href={homepageSettings.youtubeUrl.trim()}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FF0000] text-white shadow-lg transition hover:scale-110 hover:shadow-xl"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#FF0000] text-white shadow-md transition hover:scale-105 hover:shadow-lg sm:h-12 sm:w-12"
               aria-label="قناتنا على يوتيوب"
             >
-              <svg className="h-9 w-9" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <svg className="h-6 w-6 sm:h-7 sm:w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                 <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8ZM9.6 15.5V8.5L15.9 12l-6.3 3.5Z" />
               </svg>
             </a>
@@ -395,10 +395,10 @@ export async function HomePageBelowFold({
               href={homepageSettings.facebookUrl.trim()}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-lg transition hover:scale-110 hover:shadow-xl"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-md transition hover:scale-105 hover:shadow-lg sm:h-12 sm:w-12"
               aria-label="صفحتنا على فيسبوك"
             >
-              <svg className="h-9 w-9" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <svg className="h-6 w-6 sm:h-7 sm:w-7" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
             </a>
@@ -409,10 +409,10 @@ export async function HomePageBelowFold({
               href={homepageSettings.whatsappUrl.trim()}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-110 hover:shadow-xl"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#25D366] text-white shadow-md transition hover:scale-105 hover:shadow-lg sm:h-12 sm:w-12"
               aria-label="تواصل عبر واتساب"
             >
-              <svg className="h-9 w-9" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <svg className="h-6 w-6 sm:h-7 sm:w-7" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
               </svg>
             </a>
