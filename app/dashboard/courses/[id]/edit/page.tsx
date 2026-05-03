@@ -60,6 +60,8 @@ export default async function EditCoursePage({ params }: Props) {
     id: String(c.id ?? ""),
     title: String(c.title ?? ""),
     description: String(c.description ?? ""),
+    instructorDescription: String(c.instructorDescription ?? c.instructor_description ?? ""),
+    courseSummary: String(c.courseSummary ?? c.course_summary ?? ""),
     shortDesc: String(c.shortDesc ?? c.short_desc ?? ""),
     imageUrl: String(c.imageUrl ?? c.image_url ?? ""),
     price: String(Number(c.price ?? 0)),

@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS "Course" (
   title_ar            TEXT,
   slug                TEXT NOT NULL UNIQUE,
   description         TEXT NOT NULL,
+  instructor_description TEXT,
+  course_summary      TEXT,
   short_desc          VARCHAR(300),
   image_url           TEXT,
   price               DECIMAL(10, 2) NOT NULL DEFAULT 0,

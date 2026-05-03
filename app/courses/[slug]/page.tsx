@@ -102,14 +102,26 @@ export default async function CoursePage({ params }: Props) {
   };
   const title = (course as { titleAr?: string; title: string }).titleAr ?? course.title;
   const categoryName = (course.category as { nameAr?: string; name?: string })?.nameAr ?? (course.category as { name?: string })?.name;
+  const isStudent = session?.user?.role === "STUDENT";
   const canEnroll =
-    session?.user?.role === "STUDENT" && !isEnrolled && !paidCourseCoveredBySubscription;
+    isStudent && !isEnrolled && !paidCourseCoveredBySubscription;
   const hasPartialAccess = allowedLessonIds.length > 0 || allowedQuizIds.length > 0;
   const isStaff = session?.user?.role === "ADMIN" || session?.user?.role === "ASSISTANT_ADMIN";
   const canAccessContent =
     isStaff || hasPartialAccess || (session?.user?.role === "STUDENT" && hasFullStudentAccess);
   const canAccessQuizzes = isStaff || (session?.user?.role === "STUDENT" && hasFullStudentAccess);
   const coursePrice = Number((course as Record<string, unknown>).price) || 0;
+  const instructorDescription = String(
+    (course as Record<string, unknown>).instructorDescription ??
+      (course as Record<string, unknown>).instructor_description ??
+      "",
+  ).trim();
+  const courseDescription = String((course as Record<string, unknown>).description ?? "").trim();
+  const courseSummary = String(
+    (course as Record<string, unknown>).courseSummary ??
+      (course as Record<string, unknown>).course_summary ??
+      "",
+  ).trim();
 
   const liveStreams = canAccessContent ? await getLiveStreamsByCourseId(course.id) : [];
   const homepageSettings = await getHomepageSettings();
@@ -217,8 +229,16 @@ export default async function CoursePage({ params }: Props) {
             </h1>
             <div className="mt-4 flex flex-wrap gap-2">
               {coursePrice > 0 && (
-                <span className="rounded-full bg-[var(--color-primary-light)] px-3 py-1 text-sm font-semibold text-[var(--color-primary)]">
-                  {coursePrice.toFixed(2)} ج.م
+                <span
+                  className="inline-flex items-stretch overflow-hidden rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)]"
+                  dir="ltr"
+                >
+                  <span className="flex items-center px-3 py-2 text-sm font-bold tabular-nums text-[var(--color-foreground)]">
+                    {coursePrice.toFixed(2)}
+                  </span>
+                  <span className="flex items-center border-s border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-primary)_14%,var(--color-surface))] px-2.5 py-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+                    ج.م
+                  </span>
                 </span>
               )}
               {(course as Record<string, unknown>).duration ? (
@@ -234,8 +254,52 @@ export default async function CoursePage({ params }: Props) {
                 </span>
               ) : null}
             </div>
-            <div className="mt-6 prose-custom text-[var(--color-foreground)]">
-              <p>{(course as Record<string, unknown>).description as string}</p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              {isGuest && (
+                <Link
+                  href={`/login?callbackUrl=${encodeURIComponent(`/courses/${decodeURIComponent(segment)}`)}`}
+                  className="inline-flex items-center justify-center rounded-[var(--radius-btn)] bg-[var(--color-primary)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--color-primary-hover)]"
+                >
+                  تسجيل الدخول لشراء الدورة
+                </Link>
+              )}
+              {session && !isStudent && !isEnrolled && !paidCourseCoveredBySubscription && (
+                <button
+                  type="button"
+                  disabled
+                  className="inline-flex cursor-not-allowed items-center justify-center rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-5 py-2.5 text-sm font-bold text-[var(--color-muted)] opacity-80"
+                >
+                  الشراء متاح بحساب عميل فقط
+                </button>
+              )}
+              {canEnroll && (
+                <a
+                  href="#course-purchase"
+                  className="inline-flex items-center justify-center rounded-[var(--radius-btn)] bg-[var(--color-primary)] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[var(--color-primary-hover)]"
+                >
+                  {coursePrice > 0 ? "شراء الدورة الآن" : "التسجيل في الدورة"}
+                </a>
+              )}
+            </div>
+            <div className="mt-6 space-y-6 text-[var(--color-foreground)]">
+              <section>
+                <h2 className="mb-2 text-base font-bold text-[var(--color-primary)]">وصف المدرب</h2>
+                <p className="whitespace-pre-line break-words [overflow-wrap:anywhere] text-sm leading-7 text-[var(--color-foreground)]">
+                  {instructorDescription || "لا يوجد وصف للمدرب حالياً."}
+                </p>
+              </section>
+              <section>
+                <h2 className="mb-2 text-base font-bold text-[var(--color-primary)]">وصف الدورة</h2>
+                <p className="whitespace-pre-line break-words [overflow-wrap:anywhere] text-sm leading-7 text-[var(--color-foreground)]">
+                  {courseDescription || "لا يوجد وصف للدورة."}
+                </p>
+              </section>
+              <section>
+                <h2 className="mb-2 text-base font-bold text-[var(--color-primary)]">ملخص الدورة والمستفاد منها</h2>
+                <p className="whitespace-pre-line break-words [overflow-wrap:anywhere] text-sm leading-7 text-[var(--color-foreground)]">
+                  {courseSummary || "لا يوجد ملخص للدورة حالياً."}
+                </p>
+              </section>
             </div>
 
             {liveStreams.length > 0 && (
@@ -271,12 +335,22 @@ export default async function CoursePage({ params }: Props) {
               </div>
             )}
 
-            {canEnroll && (
-              <EnrollButton
-                courseId={course.id}
-                coursePrice={coursePrice}
-                userBalance={userBalance}
-              />
+            {!isEnrolled && !paidCourseCoveredBySubscription && (
+              <div id="course-purchase">
+                {canEnroll ? (
+                  <EnrollButton
+                    courseId={course.id}
+                    coursePrice={coursePrice}
+                    userBalance={userBalance}
+                  />
+                ) : (
+                  <div className="mt-6 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3 text-sm text-[var(--color-muted)]">
+                    {isGuest
+                      ? "سجّل الدخول بحساب عميل لإتمام شراء الدورة باستخدام الرصيد."
+                      : "شراء الدورة باستخدام الرصيد متاح فقط عند تسجيل الدخول بحساب عميل."}
+                  </div>
+                )}
+              </div>
             )}
             {isEnrolled && (
               <p className="mt-4 rounded-[var(--radius-btn)] bg-[var(--color-primary-light)]/50 px-4 py-2 text-sm text-[var(--color-primary)]">

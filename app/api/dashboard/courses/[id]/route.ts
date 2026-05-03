@@ -42,6 +42,8 @@ export async function PUT(
   let body: {
     title?: string;
     description?: string;
+    instructorDescription?: string;
+    courseSummary?: string;
     shortDesc?: string;
     imageUrl?: string;
     price?: number;
@@ -167,6 +169,8 @@ export async function PUT(
     title,
     title_ar: title,
     description,
+    instructor_description: body.instructorDescription?.trim() || null,
+    course_summary: body.courseSummary?.trim() || null,
     short_desc: body.shortDesc?.trim() || null,
     image_url: body.imageUrl?.trim() || null,
     price: body.price ?? 0,
@@ -272,6 +276,8 @@ export async function GET(
     titleAr: c.titleAr ?? c.title_ar,
     slug: c.slug,
     description: c.description,
+    instructorDescription: c.instructorDescription ?? c.instructor_description,
+    courseSummary: c.courseSummary ?? c.course_summary,
     shortDesc: c.shortDesc ?? c.short_desc,
     imageUrl: c.imageUrl ?? c.image_url,
     price: Number(c.price ?? 0),

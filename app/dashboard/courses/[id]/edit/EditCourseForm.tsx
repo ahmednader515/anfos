@@ -21,6 +21,8 @@ type InitialData = {
   id: string;
   title: string;
   description: string;
+  instructorDescription: string;
+  courseSummary: string;
   shortDesc: string;
   imageUrl: string;
   price: string;
@@ -45,6 +47,8 @@ export function EditCourseForm({ courseId, initialData }: { courseId: string; in
   const [form, setForm] = useState({
     title: initialData.title,
     description: initialData.description,
+    instructorDescription: initialData.instructorDescription,
+    courseSummary: initialData.courseSummary,
     shortDesc: initialData.shortDesc,
     imageUrl: initialData.imageUrl,
     price: initialData.price,
@@ -326,6 +330,8 @@ export function EditCourseForm({ courseId, initialData }: { courseId: string; in
     const payload = {
       title: form.title.trim(),
       description: form.description.trim(),
+      instructorDescription: form.instructorDescription.trim() || undefined,
+      courseSummary: form.courseSummary.trim() || undefined,
       shortDesc: form.shortDesc.trim() || undefined,
       imageUrl: form.imageUrl.trim() || undefined,
       price: form.price ? parseFloat(form.price) : 0,
@@ -608,12 +614,32 @@ export function EditCourseForm({ courseId, initialData }: { courseId: string; in
             <input type="text" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2" required />
           </div>
           <div>
+            <label className="block text-sm font-medium text-[var(--color-foreground)]">وصف المدرب</label>
+            <textarea
+              value={form.instructorDescription}
+              onChange={(e) => setForm((f) => ({ ...f, instructorDescription: e.target.value }))}
+              rows={3}
+              placeholder="نبذة عن المدرّس كما ستظهر في صفحة الدورة"
+              className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </div>
+          <div>
             <label className="block text-sm font-medium text-[var(--color-foreground)]">وصف قصير</label>
             <input type="text" maxLength={300} value={form.shortDesc} onChange={(e) => setForm((f) => ({ ...f, shortDesc: e.target.value }))} className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2" />
           </div>
           <div>
             <label className="block text-sm font-medium text-[var(--color-foreground)]">الوصف الكامل *</label>
             <textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} rows={4} className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2" required />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-foreground)]">ملخص الدورة والمستفاد منها</label>
+            <textarea
+              value={form.courseSummary}
+              onChange={(e) => setForm((f) => ({ ...f, courseSummary: e.target.value }))}
+              rows={4}
+              placeholder="اكتب ملخصًا سريعًا لما سيتعلمه الطالب من هذه الدورة"
+              className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
           </div>
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={form.isPublished} onChange={(e) => setForm((f) => ({ ...f, isPublished: e.target.checked }))} />

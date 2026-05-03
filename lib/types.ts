@@ -255,6 +255,8 @@ export interface Course {
   title_ar: string | null;
   slug: string;
   description: string;
+  instructor_description?: string | null;
+  course_summary?: string | null;
   short_desc: string | null;
   image_url: string | null;
   price: string;
@@ -372,6 +374,8 @@ export interface CourseApp {
   titleAr?: string | null;
   slug: string;
   description?: string;
+  instructorDescription?: string | null;
+  courseSummary?: string | null;
   shortDesc?: string | null;
   imageUrl?: string | null;
   price?: number | string;

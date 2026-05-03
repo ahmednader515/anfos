@@ -46,6 +46,8 @@ export async function POST(request: NextRequest) {
     title: string;
     slug: string;
     description: string;
+    instructorDescription?: string;
+    courseSummary?: string;
     shortDesc?: string;
     imageUrl?: string;
     price?: number;
@@ -151,6 +153,8 @@ export async function POST(request: NextRequest) {
       title_ar: title,
       slug,
       description,
+      instructor_description: body.instructorDescription?.trim() || null,
+      course_summary: body.courseSummary?.trim() || null,
       short_desc: body.shortDesc?.trim() || null,
       image_url: body.imageUrl?.trim() || null,
       price: body.price ?? 0,

@@ -56,6 +56,27 @@ function subCategoryLabel(sc: SubCategoryShape): string {
   return "بدون قسم فرعي";
 }
 
+function toCourseCardProps(c: TeacherCourseListItem) {
+  const cat = c.category;
+  return {
+    id: c.id,
+    title: c.title,
+    titleAr: c.titleAr ?? c.title_ar ?? null,
+    slug: c.slug ?? null,
+    shortDesc: c.shortDesc ?? c.short_desc ?? null,
+    imageUrl: c.imageUrl ?? c.image_url ?? null,
+    price: c.price as number | string | { toNumber?: () => number } | undefined,
+    duration: c.duration ?? null,
+    level: c.level ?? null,
+    category: cat
+      ? {
+          name: cat.name ?? "",
+          nameAr: cat.nameAr ?? cat.name_ar ?? null,
+        }
+      : null,
+  };
+}
+
 function groupCoursesByCategory(courses: TeacherCourseListItem[]) {
   const map = new Map<string, { label: string; courses: TeacherCourseListItem[] }>();
   const order: string[] = [];
@@ -121,27 +142,6 @@ export function courseMatchesSearchQuery(course: TeacherCourseListItem, rawQuery
   );
 }
 
-function toCourseCardProps(c: TeacherCourseListItem) {
-  const cat = c.category;
-  return {
-    id: c.id,
-    title: c.title,
-    titleAr: c.titleAr ?? c.title_ar ?? null,
-    slug: c.slug ?? null,
-    shortDesc: c.shortDesc ?? c.short_desc ?? null,
-    imageUrl: c.imageUrl ?? c.image_url ?? null,
-    price: c.price as number | string | { toNumber?: () => number } | undefined,
-    duration: c.duration ?? null,
-    level: c.level ?? null,
-    category: cat
-      ? {
-          name: cat.name ?? "",
-          nameAr: cat.nameAr ?? cat.name_ar ?? null,
-        }
-      : null,
-  };
-}
-
 export function TeacherCoursesSearch({
   courses,
   /** عند false: شبكة واحدة (مثل «جميع الدورات») مع نفس شريط البحث */
@@ -201,7 +201,7 @@ export function TeacherCoursesSearch({
                 <h2 className="text-xl font-semibold text-[var(--color-foreground)]">{group.label}</h2>
                 <div className="h-px flex-1 bg-[var(--color-border)]/70" aria-hidden />
               </div>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid w-full min-w-0 gap-2 [grid-template-columns:repeat(2,minmax(0,1fr))] sm:gap-4 lg:[grid-template-columns:repeat(4,minmax(0,1fr))]">
                 {group.courses.map((course) => (
                   <CourseCard key={course.id} course={toCourseCardProps(course)} />
                 ))}
@@ -210,7 +210,7 @@ export function TeacherCoursesSearch({
           ))}
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid w-full min-w-0 gap-2 [grid-template-columns:repeat(2,minmax(0,1fr))] sm:gap-4 lg:[grid-template-columns:repeat(4,minmax(0,1fr))]">
           {filtered.map((course) => (
             <CourseCard key={course.id} course={toCourseCardProps(course)} />
           ))}

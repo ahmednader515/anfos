@@ -21,6 +21,8 @@ export function CreateCourseForm() {
   const [form, setForm] = useState({
     title: "",
     description: "",
+    instructorDescription: "",
+    courseSummary: "",
     shortDesc: "",
     imageUrl: "",
     price: "",
@@ -280,6 +282,8 @@ export function CreateCourseForm() {
       title: form.title.trim(),
       slug,
       description: form.description.trim(),
+      instructorDescription: form.instructorDescription.trim() || undefined,
+      courseSummary: form.courseSummary.trim() || undefined,
       shortDesc: form.shortDesc.trim() || undefined,
       imageUrl: form.imageUrl.trim() || undefined,
       price: form.price ? parseFloat(form.price) : 0,
@@ -589,6 +593,16 @@ export function CreateCourseForm() {
             />
           </div>
           <div>
+            <label className="block text-sm font-medium text-[var(--color-foreground)]">وصف المدرب</label>
+            <textarea
+              value={form.instructorDescription}
+              onChange={(e) => setForm((f) => ({ ...f, instructorDescription: e.target.value }))}
+              rows={3}
+              placeholder="نبذة عن المدرّس كما ستظهر في صفحة الدورة"
+              className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </div>
+          <div>
             <label className="block text-sm font-medium text-[var(--color-foreground)]">وصف قصير</label>
             <input
               type="text"
@@ -606,6 +620,16 @@ export function CreateCourseForm() {
               rows={4}
               className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
               required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-foreground)]">ملخص الدورة والمستفاد منها</label>
+            <textarea
+              value={form.courseSummary}
+              onChange={(e) => setForm((f) => ({ ...f, courseSummary: e.target.value }))}
+              rows={4}
+              placeholder="اكتب ملخصًا سريعًا لما سيتعلمه الطالب من هذه الدورة"
+              className="mt-1 w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
             />
           </div>
         </div>

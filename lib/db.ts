@@ -480,6 +480,19 @@ async function ensureCategoryCreatedByColumn(): Promise<void> {
 
 // ----- SubCategory -----
 let subCategorySchemaEnsured = false;
+let courseExtendedFieldsEnsured = false;
+
+async function ensureCourseExtendedFields(): Promise<void> {
+  if (courseExtendedFieldsEnsured) return;
+  try {
+    await sql`ALTER TABLE "Course" ADD COLUMN IF NOT EXISTS instructor_description TEXT`;
+    await sql`ALTER TABLE "Course" ADD COLUMN IF NOT EXISTS course_summary TEXT`;
+  } catch {
+    /* DDL غير متاح */
+  } finally {
+    courseExtendedFieldsEnsured = true;
+  }
+}
 
 async function ensureSubCategorySchema(): Promise<void> {
   if (subCategorySchemaEnsured) return;
@@ -3298,6 +3311,8 @@ export async function createCourse(data: {
   title_ar: string;
   slug: string;
   description: string;
+  instructor_description?: string | null;
+  course_summary?: string | null;
   short_desc?: string | null;
   image_url?: string | null;
   price: number;
@@ -3308,6 +3323,7 @@ export async function createCourse(data: {
   subcategory_id?: string | null;
   accepts_homework?: boolean;
 }): Promise<Course> {
+  await ensureCourseExtendedFields();
   const id = generateId();
   const catId = data.category_id ?? null;
   const subCatId = data.subcategory_id ?? null;
@@ -3315,13 +3331,19 @@ export async function createCourse(data: {
   let rows: Record<string, unknown>[];
   try {
     rows = await sql`
-      INSERT INTO "Course" (id, title, title_ar, slug, description, short_desc, image_url, price, is_published, created_by_id, max_quiz_attempts, category_id, subcategory_id, accepts_homework)
-      VALUES (${id}, ${data.title}, ${data.title_ar}, ${data.slug}, ${data.description}, ${data.short_desc ?? null}, ${data.image_url ?? null}, ${data.price}, ${data.is_published}, ${data.created_by_id}, ${data.max_quiz_attempts ?? null}, ${catId}, ${subCatId}, ${acceptsHomework})
+      INSERT INTO "Course" (id, title, title_ar, slug, description, instructor_description, course_summary, short_desc, image_url, price, is_published, created_by_id, max_quiz_attempts, category_id, subcategory_id, accepts_homework)
+      VALUES (${id}, ${data.title}, ${data.title_ar}, ${data.slug}, ${data.description}, ${data.instructor_description ?? null}, ${data.course_summary ?? null}, ${data.short_desc ?? null}, ${data.image_url ?? null}, ${data.price}, ${data.is_published}, ${data.created_by_id}, ${data.max_quiz_attempts ?? null}, ${catId}, ${subCatId}, ${acceptsHomework})
       RETURNING *
     `;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    if (msg.includes("accepts_homework") || msg.includes("column") && msg.includes("does not exist")) {
+    if (msg.includes("instructor_description") || msg.includes("course_summary")) {
+      rows = await sql`
+        INSERT INTO "Course" (id, title, title_ar, slug, description, short_desc, image_url, price, is_published, created_by_id, max_quiz_attempts, category_id, subcategory_id, accepts_homework)
+        VALUES (${id}, ${data.title}, ${data.title_ar}, ${data.slug}, ${data.description}, ${data.short_desc ?? null}, ${data.image_url ?? null}, ${data.price}, ${data.is_published}, ${data.created_by_id}, ${data.max_quiz_attempts ?? null}, ${catId}, ${subCatId}, ${acceptsHomework})
+        RETURNING *
+      `;
+    } else if (msg.includes("accepts_homework") || msg.includes("column") && msg.includes("does not exist")) {
       rows = await sql`
         INSERT INTO "Course" (id, title, title_ar, slug, description, short_desc, image_url, price, is_published, created_by_id, max_quiz_attempts, category_id, subcategory_id)
         VALUES (${id}, ${data.title}, ${data.title_ar}, ${data.slug}, ${data.description}, ${data.short_desc ?? null}, ${data.image_url ?? null}, ${data.price}, ${data.is_published}, ${data.created_by_id}, ${data.max_quiz_attempts ?? null}, ${catId}, ${subCatId})
@@ -3355,6 +3377,8 @@ export async function updateCourse(
     title?: string;
     title_ar?: string;
     description?: string;
+    instructor_description?: string | null;
+    course_summary?: string | null;
     short_desc?: string | null;
     image_url?: string | null;
     price?: number;
@@ -3365,9 +3389,24 @@ export async function updateCourse(
     accepts_homework?: boolean;
   }
 ): Promise<void> {
+  await ensureCourseExtendedFields();
   if (data.title !== undefined) await sql`UPDATE "Course" SET title = ${data.title}, updated_at = NOW() WHERE id = ${id}`;
   if (data.title_ar !== undefined) await sql`UPDATE "Course" SET title_ar = ${data.title_ar}, updated_at = NOW() WHERE id = ${id}`;
   if (data.description !== undefined) await sql`UPDATE "Course" SET description = ${data.description}, updated_at = NOW() WHERE id = ${id}`;
+  if (data.instructor_description !== undefined) {
+    try {
+      await sql`UPDATE "Course" SET instructor_description = ${data.instructor_description}, updated_at = NOW() WHERE id = ${id}`;
+    } catch {
+      /* العمود قد يكون غير موجود قبل تشغيل DDL */
+    }
+  }
+  if (data.course_summary !== undefined) {
+    try {
+      await sql`UPDATE "Course" SET course_summary = ${data.course_summary}, updated_at = NOW() WHERE id = ${id}`;
+    } catch {
+      /* العمود قد يكون غير موجود قبل تشغيل DDL */
+    }
+  }
   if (data.short_desc !== undefined) await sql`UPDATE "Course" SET short_desc = ${data.short_desc}, updated_at = NOW() WHERE id = ${id}`;
   if (data.image_url !== undefined) await sql`UPDATE "Course" SET image_url = ${data.image_url}, updated_at = NOW() WHERE id = ${id}`;
   if (data.price !== undefined) await sql`UPDATE "Course" SET price = ${data.price}, updated_at = NOW() WHERE id = ${id}`;
