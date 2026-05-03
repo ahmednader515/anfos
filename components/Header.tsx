@@ -25,7 +25,7 @@ function UserMenu() {
     ADMIN: "أدمن",
     ASSISTANT_ADMIN: "مساعد الأدمن",
     STUDENT: "عميل",
-    TEACHER: "مدرس",
+    TEACHER: "مدرب",
   };
 
   return (

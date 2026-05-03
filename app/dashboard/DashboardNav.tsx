@@ -127,7 +127,7 @@ export function DashboardNav({
           <NavLink href="/dashboard/live-streams">
             البثوث المباشرة
           </NavLink>
-          <NavLink href="/dashboard/teachers">تعدد المدرسين</NavLink>
+          <NavLink href="/dashboard/teachers">تعدد المدربين</NavLink>
           <NavLink href="/dashboard/subscriptions">إنشاء اشتراكات المنصة</NavLink>
           <NavLink href="/dashboard/subscription-students">العملاء المشتركين</NavLink>
           <NavLink href="/dashboard/store">متجر المنصة</NavLink>

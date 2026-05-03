@@ -32,7 +32,7 @@ type Props = {
   totalEarnings: number;
   attempts: Attempt[];
   studentsWithDetails: StudentWithDetails[];
-  /** نص يُلحق بعنوان الصفحة، مثال: «(كورساتك)» للمدرس */
+  /** نص يُلحق بعنوان الصفحة، مثال: «(كورساتك)» للمدرب */
   titleSuffix?: string;
 };
 

@@ -41,7 +41,7 @@ export default async function DashboardPage() {
         <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]">
           <h2 className="text-lg font-semibold text-[var(--color-foreground)]">مرحباً، {session.user.name}</h2>
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            لوحة المدرس: أدر كورساتك، تابع العملاء المسجلين فيها، والواجبات والبث والأكواد من القائمة أعلاه.
+            لوحة المدرب: أدر كورساتك، تابع العملاء المسجلين فيها، والواجبات والبث والأكواد من القائمة أعلاه.
           </p>
         </div>
         <div>
@@ -172,7 +172,7 @@ export default async function DashboardPage() {
           >
             <h2 className="text-lg font-semibold text-[var(--color-foreground)]">الرسائل الواردة</h2>
             <p className="mt-2 text-sm text-[var(--color-muted)]">
-              عرض الرسائل والمحادثات من الإدارة أو المدرس
+              عرض الرسائل والمحادثات من الإدارة أو المدرب
             </p>
             <span className="mt-4 inline-flex w-fit rounded-[var(--radius-btn)] bg-[var(--color-primary)] px-5 py-2.5 text-base font-medium text-white transition hover:bg-[var(--color-primary-hover)]">
               فتح الرسائل
@@ -367,7 +367,7 @@ export default async function DashboardPage() {
                 className="flex min-h-[200px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center transition hover:border-[var(--color-primary)]/30"
               >
                 <h3 className="font-semibold text-[var(--color-foreground)]">إعدادات الصفحة الرئيسية</h3>
-                <p className="mt-1 text-sm text-[var(--color-muted)]">صورة المدرس واسم المنصة والعنوان والشعار</p>
+                <p className="mt-1 text-sm text-[var(--color-muted)]">صورة المدرب واسم المنصة والعنوان والشعار</p>
               </Link>
               <Link
                 href="/dashboard/reviews"
@@ -381,22 +381,22 @@ export default async function DashboardPage() {
 
           <hr className="border-[var(--color-border)]" />
 
-          {/* قسم: تحويل المنصة إلى أكاديمية متعددة المدرسين */}
+          {/* قسم: تحويل المنصة إلى أكاديمية متعددة المدربين */}
           <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]">
             <h2 className="text-lg font-semibold text-[var(--color-foreground)] sm:text-xl">
-              تحويل المنصة الشخصية إلى أكاديمية تضم عدداً من المدرسين وإمكانية إنشاء اشتراكات للمحتوى المعروض
+              تحويل المنصة الشخصية إلى أكاديمية تضم عدداً من المدربين وإمكانية إنشاء اشتراكات للمحتوى المعروض
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[var(--color-muted)]">
-              من هنا تفعّل عرض المدرسين على الموقع، وتنشئ حسابات مدرسين لكل منهم دوراته الظاهرة في بطاقته، لتتحول المنصة من مسار شخصي واحد إلى أكاديمية يعلّم فيها عدة مدرسين.               كما يمكنك من الأسفل ضبط اشتراكات المنصة (أسبوعية أو شهرية أو سنوية) ليصل العملاء لجميع الكورسات المدفوعة المنشورة ضمن مدة الاشتراك، ومتابعة العملاء المشتركين وتعديل أو حذف سجلات اشتراكهم.
+              من هنا تفعّل عرض المدربين على الموقع، وتنشئ حسابات مدربين لكل منهم دوراته الظاهرة في بطاقته، لتتحول المنصة من مسار شخصي واحد إلى أكاديمية يعلّم فيها عدة مدربين.               كما يمكنك من الأسفل ضبط اشتراكات المنصة (أسبوعية أو شهرية أو سنوية) ليصل العملاء لجميع الكورسات المدفوعة المنشورة ضمن مدة الاشتراك، ومتابعة العملاء المشتركين وتعديل أو حذف سجلات اشتراكهم.
             </p>
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <Link
                 href="/dashboard/teachers"
                 className="flex min-h-[200px] flex-col justify-center rounded-[var(--radius-card)] border border-[var(--color-primary)]/25 bg-[var(--color-background)] p-6 text-center transition hover:border-[var(--color-primary)]/50 hover:shadow-[var(--shadow-card)]"
               >
-                <h3 className="font-semibold text-[var(--color-foreground)]">تعدد المدرسين</h3>
+                <h3 className="font-semibold text-[var(--color-foreground)]">تعدد المدربين</h3>
                 <p className="mt-2 text-sm text-[var(--color-muted)]">
-                  تفعيل أو إيقاف قسم «اختر المدرسين»، وإنشاء حسابات مدرسين وتعديلها (الاسم، البريد أو الهاتف، المادة، الصورة، كلمة المرور)
+                  تفعيل أو إيقاف قسم «اختر المدربين»، وإنشاء حسابات مدربين وتعديلها (الاسم، البريد أو الهاتف، المادة، الصورة، كلمة المرور)
                 </p>
               </Link>
               <Link

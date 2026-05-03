@@ -40,7 +40,7 @@ export default async function TeachersAdminPage() {
       <Link href="/dashboard" className="text-sm font-medium text-[var(--color-primary)] hover:underline">
         ← العودة للوحة التحكم
       </Link>
-      <h2 className="mt-4 text-xl font-bold text-[var(--color-foreground)]">إدارة المدرسين</h2>
+      <h2 className="mt-4 text-xl font-bold text-[var(--color-foreground)]">إدارة المدربين</h2>
       <TeachersAdminClient initialEnabled={enabled} initialTeachers={initialTeachers} />
     </div>
   );

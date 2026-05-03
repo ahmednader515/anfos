@@ -97,7 +97,7 @@ export default async function CoursesPage({ searchParams }: Props) {
       : "جميع الدورات";
 
   const pageSubtitle = teacherName
-    ? "الدورات المنشورة التي يقدّمها هذا المدرس على المنصة"
+    ? "الدورات المنشورة التي يقدّمها هذا المدرب على المنصة"
     : subcategoryName
       ? `دورات القسم الفرعي المحدد فقط`
     : categoryName
@@ -173,7 +173,7 @@ export default async function CoursesPage({ searchParams }: Props) {
         <div className="rounded-[var(--radius-card)] border border-dashed border-[var(--color-border)] bg-[var(--color-surface)]/50 p-12 text-center">
           <p className="text-[var(--color-muted)]">
             {tid
-              ? "لا توجد دورات منشورة لهذا المدرس حالياً."
+              ? "لا توجد دورات منشورة لهذا المدرب حالياً."
               : subcategorySlug?.trim()
                 ? "لا توجد دورات في هذا القسم الفرعي حالياً."
                 : categorySlug?.trim()

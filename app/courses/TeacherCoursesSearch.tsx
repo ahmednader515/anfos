@@ -171,7 +171,7 @@ export function TeacherCoursesSearch({
     <>
       <div className="mb-8">
         <label htmlFor={inputId} className="sr-only">
-          {groupByCategory ? "بحث في دورات المدرس" : "بحث في الدورات"}
+          {groupByCategory ? "بحث في دورات المدرب" : "بحث في الدورات"}
         </label>
         <input
           id={inputId}

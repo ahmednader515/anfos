@@ -12,7 +12,7 @@ export type HomeTeacher = {
   courses: TeacherCardCourse[];
 };
 
-/** قسم الصفحة الرئيسية «اختر المدرسين» — يظهر فقط عند تفعيل الميزة من السيرفر */
+/** قسم الصفحة الرئيسية «اختر المدربين» — يظهر فقط عند تفعيل الميزة من السيرفر */
 export function HomeTeachersSection({
   enabled,
   initialTeachers,
@@ -37,7 +37,7 @@ export function HomeTeachersSection({
             id="home-teachers-heading"
             className="text-4xl font-bold leading-tight text-[var(--color-primary)] sm:text-5xl"
           >
-            اختر المدرسين
+            اختر المدربين
           </h2>
           <svg
             className="mt-3 h-8 w-[17.5rem] text-[var(--color-primary)] sm:h-9 sm:w-[21rem] md:w-[26rem]"
@@ -54,13 +54,13 @@ export function HomeTeachersSection({
             />
           </svg>
           <p className="mt-3 max-w-xl text-sm text-[var(--color-muted)]">
-            تصفح مدرسي المنصة وانتقل إلى دورات كل مدرس
+            تصفح مدربي المنصة وانتقل إلى دورات كل مدرب
           </p>
         </div>
 
         {visible.length === 0 ? (
           <p className="mt-14 text-center text-[var(--color-muted)]">
-            لا يوجد مدرسون حتى الآن. أنشئ حسابات من لوحة التحكم ← تعدد المدرسين.
+            لا يوجد مدربون حتى الآن. أنشئ حسابات من لوحة التحكم ← تعدد المدربين.
           </p>
         ) : (
           <>
@@ -82,7 +82,7 @@ export function HomeTeachersSection({
                 href="/teachers"
                 className="text-sm font-semibold text-[var(--color-primary)] underline-offset-4 hover:underline"
               >
-                صفحة المدرسين الكاملة ←
+                صفحة المدربين الكاملة ←
               </Link>
             </div>
           </>

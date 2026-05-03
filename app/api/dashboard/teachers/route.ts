@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
   }
   const enabled = await getTeachersFeatureEnabled();
   if (!enabled) {
-    return NextResponse.json({ error: "فعّل ميزة المدرسين أولاً من لوحة التحكم" }, { status: 400 });
+    return NextResponse.json({ error: "فعّل ميزة المدربين أولاً من لوحة التحكم" }, { status: 400 });
   }
   let body: {
     name?: string;
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "قاعدة البيانات لا تقبل رتبة «مدرس» بعد. حدّث قاعدة البيانات (قيمة TEACHER في نوع UserRole أو قيد role) ثم أعد المحاولة. يمكن تشغيل scripts/add-teachers-multi.sql كاملاً على Neon.",
+            "قاعدة البيانات لا تقبل رتبة «مدرب» بعد. حدّث قاعدة البيانات (قيمة TEACHER في نوع UserRole أو قيد role) ثم أعد المحاولة. يمكن تشغيل scripts/add-teachers-multi.sql كاملاً على Neon.",
         },
         { status: 500 },
       );

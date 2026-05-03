@@ -134,12 +134,11 @@ export function SubscriptionPlanCard({
 
   return (
     <article
-      className="subscription-plan-card mx-auto flex max-w-sm flex-col overflow-hidden rounded-2xl shadow-xl ring-1 ring-white/10"
-      style={{ background: SURFACE }}
+      className="subscription-plan-card mx-auto flex max-w-sm flex-col overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-xl"
       dir="rtl"
     >
       {/* منطقة الصورة */}
-      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900">
+      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-gradient-to-br from-slate-200 to-slate-100 dark:from-slate-800 dark:to-slate-900">
         {plan.imageUrl ? (
           <img src={plan.imageUrl} alt="" className="h-full w-full object-cover" />
         ) : null}
@@ -161,8 +160,7 @@ export function SubscriptionPlanCard({
 
       {/* جسم الكارت — يتداخل مع الصورة */}
       <div
-        className="relative z-[2] -mt-8 rounded-t-3xl border border-white/10 px-5 pb-6 pt-12 sm:px-6 sm:pt-14"
-        style={{ background: SURFACE }}
+        className="relative z-[2] -mt-8 rounded-t-3xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 pb-6 pt-12 sm:px-6 sm:pt-14"
       >
         <div
           className="absolute left-1/2 top-0 z-[3] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border-2 border-amber-500/50 bg-gradient-to-b from-amber-500 to-amber-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg sm:px-8 sm:py-3 sm:text-base"
@@ -172,7 +170,9 @@ export function SubscriptionPlanCard({
 
         <div className="flex flex-row items-start justify-between gap-3">
           <div className="flex min-w-0 flex-1 flex-col gap-2">
-            <h3 className="text-right text-xl font-bold leading-snug text-white">{plan.name}</h3>
+            <h3 className="text-right text-xl font-bold leading-snug text-[var(--color-foreground)]">
+              {plan.name}
+            </h3>
             {isStudent && hasActivePlatformSubscription ? (
               <p className="text-right text-xs leading-relaxed text-emerald-300/95">
                 {activeSubExpiryFormatted ? (
@@ -191,7 +191,7 @@ export function SubscriptionPlanCard({
             {isStudent ? (
               <Link
                 href="/courses"
-                className="rounded-xl border-2 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-white/5"
+                className="rounded-xl border-2 px-3 py-2 text-center text-xs font-semibold text-[var(--color-foreground)] transition hover:bg-[var(--color-surface)]"
                 style={{ borderColor: TEAL }}
               >
                 الكورسات
@@ -199,7 +199,7 @@ export function SubscriptionPlanCard({
             ) : (
               <Link
                 href={loginHref}
-                className="rounded-xl border-2 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-white/5"
+                className="rounded-xl border-2 px-3 py-2 text-center text-xs font-semibold text-[var(--color-foreground)] transition hover:bg-[var(--color-surface)]"
                 style={{ borderColor: TEAL }}
               >
                 تسجيل الدخول
@@ -224,7 +224,7 @@ export function SubscriptionPlanCard({
                     : "اشتر الآن"}
               </button>
             ) : isLoggedIn ? (
-              <span className="rounded-xl bg-white/10 px-3 py-2 text-center text-[10px] text-neutral-400">
+              <span className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-center text-[10px] text-[var(--color-muted)]">
                 للعملاء فقط
               </span>
             ) : (
@@ -241,20 +241,24 @@ export function SubscriptionPlanCard({
 
         <div className="my-4 space-y-2">
           <div className="h-px w-full opacity-80" style={{ backgroundColor: TEAL }} />
-          <div className="h-px w-full bg-white/10" />
+          <div className="h-px w-full bg-[var(--color-border)]" />
         </div>
 
         {plan.description?.trim() ? (
-          <p className="text-right text-sm leading-relaxed text-neutral-400">{plan.description.trim()}</p>
+          <p className="text-right text-sm leading-relaxed text-[var(--color-muted)]">
+            {plan.description.trim()}
+          </p>
         ) : (
-          <p className="text-right text-sm text-neutral-500">وصول لجميع الكورسات المدفوعة المنشورة طوال مدة الاشتراك.</p>
+          <p className="text-right text-sm text-[var(--color-muted)]">
+            وصول لجميع الكورسات المدفوعة المنشورة طوال مدة الاشتراك.
+          </p>
         )}
 
-        <div className="mt-6 flex flex-row items-end justify-between gap-3 border-t border-white/10 pt-4">
-          <div className="space-y-1 text-right text-xs text-neutral-400">
+        <div className="mt-6 flex flex-row items-end justify-between gap-3 border-t border-[var(--color-border)] pt-4">
+          <div className="space-y-1 text-right text-xs text-[var(--color-muted)]">
             <p className="flex items-center justify-end gap-1.5">
               <span>وصول شامل للمدفوع</span>
-              <span className="text-neutral-500" aria-hidden>
+              <span className="text-[var(--color-muted)]" aria-hidden>
                 ◷
               </span>
             </p>

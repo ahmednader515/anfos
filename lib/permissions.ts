@@ -4,7 +4,7 @@ export function isStaffRole(role: string): role is "ADMIN" | "ASSISTANT_ADMIN" |
   return role === "ADMIN" || role === "ASSISTANT_ADMIN" || role === "TEACHER";
 }
 
-/** أدمن أو مساعد: يديرون كل الكورسات؛ مدرس: كورساته فقط */
+/** أدمن أو مساعد: يديرون كل الكورسات؛ مدرب: كورساته فقط */
 export function canManageCourse(
   role: UserRole | string,
   sessionUserId: string,

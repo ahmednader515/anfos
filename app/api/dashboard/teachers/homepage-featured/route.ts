@@ -10,7 +10,7 @@ export async function PATCH(request: NextRequest) {
   }
   const enabled = await getTeachersFeatureEnabled();
   if (!enabled) {
-    return NextResponse.json({ error: "فعّل ميزة المدرسين أولاً" }, { status: 400 });
+    return NextResponse.json({ error: "فعّل ميزة المدربين أولاً" }, { status: 400 });
   }
   let body: { orderedTeacherIds?: unknown };
   try {
@@ -25,7 +25,7 @@ export async function PATCH(request: NextRequest) {
   const orderedTeacherIds = raw.map((x) => String(x ?? "").trim()).filter((id) => id.length > 0);
   if (orderedTeacherIds.length > HOME_TEACHER_PREVIEW_MAX) {
     return NextResponse.json(
-      { error: `لا يزيد عن ${HOME_TEACHER_PREVIEW_MAX} مدرسين في الرئيسية` },
+      { error: `لا يزيد عن ${HOME_TEACHER_PREVIEW_MAX} مدربين في الرئيسية` },
       { status: 400 },
     );
   }

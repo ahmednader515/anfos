@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { createCategory, findCategoryByNameForDashboard, getCategoriesForDashboard } from "@/lib/db";
 
-/** أقسام لوحة الدورات — المدرس يرى أقسامه فقط؛ الأدمن/المساعد يرون أقسام المنصة والأدمن */
+/** أقسام لوحة الدورات — المدرب يرى أقسامه فقط؛ الأدمن/المساعد يرون أقسام المنصة والأدمن */
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);

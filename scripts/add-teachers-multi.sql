@@ -1,4 +1,4 @@
--- تفعيل نظام المدرسين المتعددين على المنصة
+-- تفعيل نظام المدربين المتعددين على المنصة
 -- نفّذ الملف من Neon SQL Editor أو: psql $DATABASE_URL -f scripts/add-teachers-multi.sql
 
 -- 1) قيمة جديدة في enum الرتب (تجاهل إن كانت موجودة مسبقاً)
@@ -8,7 +8,7 @@ EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
 
--- 2) حقول المدرس في جدول المستخدمين
+-- 2) حقول المدرب في جدول المستخدمين
 ALTER TABLE "User" ADD COLUMN IF NOT EXISTS teacher_subject TEXT;
 ALTER TABLE "User" ADD COLUMN IF NOT EXISTS teacher_avatar_url TEXT;
 

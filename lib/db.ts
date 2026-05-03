@@ -329,7 +329,7 @@ export async function createUser(data: {
       teacher_subject: data.teacher_subject ?? null,
       teacher_avatar_url: data.teacher_avatar_url ?? null,
     }).catch(() => {
-      /* أعمدة المدرس غير متوفرة بعد */
+      /* أعمدة المدرب غير متوفرة بعد */
     });
   }
   const u = await getUserById(id);
@@ -362,7 +362,7 @@ export async function updateUser(
     try {
       await sql`UPDATE "User" SET teacher_subject = ${data.teacher_subject}, updated_at = NOW() WHERE id = ${id}`;
     } catch {
-      /* عمود غير موجود قبل تشغيل سكربت المدرسين */
+      /* عمود غير موجود قبل تشغيل سكربت المدربين */
     }
   }
   if (data.teacher_avatar_url !== undefined) {
@@ -467,7 +467,7 @@ export async function deletePasswordChangeRequest(requestId: string): Promise<bo
 // ----- Category -----
 let categoryCreatedByColumnEnsured = false;
 
-/** يضيف عمود created_by_id لجدول الأقسام (أقسام المنصة = NULL، قسم المدرس = معرّف المدرس) */
+/** يضيف عمود created_by_id لجدول الأقسام (أقسام المنصة = NULL، قسم المدرب = معرّف المدرب) */
 async function ensureCategoryCreatedByColumn(): Promise<void> {
   if (categoryCreatedByColumnEnsured) return;
   try {
@@ -865,7 +865,7 @@ export async function getCategories(): Promise<Category[]> {
   return rowsToCamel(rows as Record<string, unknown>[]) as Category[];
 }
 
-/** أقسام تظهر في لوحة إنشاء/تعديل الدورة: المدرس يرى أقسامه فقط؛ الأدمن يرى أقسام المنصة وأقسام أي أدمن/مساعد */
+/** أقسام تظهر في لوحة إنشاء/تعديل الدورة: المدرب يرى أقسامه فقط؛ الأدمن يرى أقسام المنصة وأقسام أي أدمن/مساعد */
 export async function getCategoriesForDashboard(userId: string, role: UserRole): Promise<Category[]> {
   await ensureCategoryCreatedByColumn();
   if (role === "TEACHER") {
@@ -897,6 +897,20 @@ export async function getCategoryById(id: string): Promise<Category | null> {
   if (!id?.trim()) return null;
   const rows = await sql`SELECT * FROM "Category" WHERE id = ${id.trim()} LIMIT 1`;
   return (rowToCamel(rows[0] as Record<string, unknown>) as Category) ?? null;
+}
+
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  await ensureCategoryCreatedByColumn();
+  const s = slug?.trim();
+  if (!s) return null;
+  const rows = await sql`
+    SELECT * FROM "Category"
+    WHERE LOWER(TRIM(slug)) = LOWER(${s})
+       OR id = ${s}
+    LIMIT 1
+  `;
+  const r = rows[0] as Record<string, unknown> | undefined;
+  return r ? (rowToCamel(r) as Category) : null;
 }
 
 /** هل يحق لهذا المستخدم اختيار هذا القسم أو حذفه من لوحة الدورات؟ */
@@ -1377,7 +1391,7 @@ async function ensureAddBalanceSettingsColumns(): Promise<void> {
   }
 }
 
-/** تفعيل عرض «اختر المدرسين» وحسابات المدرسين */
+/** تفعيل عرض «اختر المدربين» وحسابات المدربين */
 export async function getTeachersFeatureEnabled(): Promise<boolean> {
   try {
     const rows = await sql`SELECT teachers_enabled FROM "HomepageSetting" WHERE id = 'default' LIMIT 1`;
@@ -1400,7 +1414,7 @@ export async function setTeachersFeatureEnabled(enabled: boolean): Promise<void>
   `;
 }
 
-/** مدرسون يظهرون في الصفحة العامة (لهم كورس منشور على الأقل) */
+/** مدربون يظهرون في الصفحة العامة (لهم كورس منشور على الأقل) */
 export async function listTeachersPublic(categoryId?: string | null): Promise<
   Array<{ id: string; name: string; teacherSubject: string | null; teacherAvatarUrl: string | null }>
 > {
@@ -1428,7 +1442,7 @@ export async function listTeachersPublic(categoryId?: string | null): Promise<
   }));
 }
 
-/** دورة منشورة تظهر ضمن بطاقة المدرس العامة */
+/** دورة منشورة تظهر ضمن بطاقة المدرب العامة */
 export type TeacherHomepageCourse = { id: string; slug: string; title: string };
 
 export type TeacherHomepageRow = {
@@ -1465,21 +1479,21 @@ export function selectTeachersForHomepagePreview<T extends { id: string; name: s
   return [...featured, ...rest].slice(0, max);
 }
 
-/** حفظ المدرسين الظاهرين أولاً في قسم الرئيسية (0–4 معرفات بالترتيب) */
+/** حفظ المدربين الظاهرين أولاً في قسم الرئيسية (0–4 معرفات بالترتيب) */
 export async function setTeacherHomepageFeaturedSlots(orderedIds: string[]): Promise<void> {
   await ensureTeacherHomepageOrderColumn();
   const cleaned = orderedIds.map((x) => String(x ?? "").trim()).filter(Boolean);
   const unique: string[] = [];
   for (const id of cleaned) {
-    if (unique.includes(id)) throw new Error("لا يمكن تكرار نفس المدرس");
+    if (unique.includes(id)) throw new Error("لا يمكن تكرار نفس المدرب");
     unique.push(id);
   }
   if (unique.length > HOME_TEACHER_PREVIEW_MAX) {
-    throw new Error(`لا يزيد عن ${HOME_TEACHER_PREVIEW_MAX} مدرسين في الرئيسية`);
+    throw new Error(`لا يزيد عن ${HOME_TEACHER_PREVIEW_MAX} مدربين في الرئيسية`);
   }
   for (const id of unique) {
     const u = await getUserById(id);
-    if (!u || u.role !== "TEACHER") throw new Error("معرّف مدرس غير صالح");
+    if (!u || u.role !== "TEACHER") throw new Error("معرّف مدرب غير صالح");
   }
   await sql`UPDATE "User" SET teacher_homepage_order = NULL, updated_at = NOW() WHERE role = 'TEACHER'`;
   for (let i = 0; i < unique.length; i++) {
@@ -1491,7 +1505,7 @@ export async function setTeacherHomepageFeaturedSlots(orderedIds: string[]): Pro
   }
 }
 
-/** كل حسابات المدرسين — للصفحة الرئيسية (حتى من دون كورس منشور) + دوراته المنشورة داخل البطاقة */
+/** كل حسابات المدربين — للصفحة الرئيسية (حتى من دون كورس منشور) + دوراته المنشورة داخل البطاقة */
 export async function listTeachersForHomepage(): Promise<TeacherHomepageRow[]> {
   try {
     await ensureTeacherHomepageOrderColumn().catch(() => {});
@@ -1554,8 +1568,8 @@ export async function listTeachersForHomepage(): Promise<TeacherHomepageRow[]> {
 }
 
 /**
- * عند تفعيل «تعدد المدرسين»: معرفات حسابات TEACHER التي يُستبعد دوراتها من القوائم العامة
- * (تُعرض ضمن بطاقة المدرس أو عند ?teacher= فقط).
+ * عند تفعيل «تعدد المدربين»: معرفات حسابات TEACHER التي يُستبعد دوراتها من القوائم العامة
+ * (تُعرض ضمن بطاقة المدرب أو عند ?teacher= فقط).
  */
 export async function getTeacherIdsExcludedFromPublicCourseLists(): Promise<Set<string>> {
   const enabled = await getTeachersFeatureEnabled();
@@ -3194,7 +3208,7 @@ export async function getCoursesWithCounts(): Promise<
   >;
 }
 
-/** كورسات منشأة من مستخدم معيّن (لوحة مدرس) */
+/** كورسات منشأة من مستخدم معيّن (لوحة مدرب) */
 export async function getCoursesWithCountsForCreator(
   creatorId: string,
 ): Promise<
@@ -4382,15 +4396,15 @@ export async function getUsersByRole(role: UserRole): Promise<User[]> {
   return rows as User[];
 }
 
-/** حذف حساب مدرس — يتحقق من الرتبة قبل الحذف (دوراته تبقى مع created_by_id = null إن كان القيد كذلك في قاعدة البيانات) */
+/** حذف حساب مدرب — يتحقق من الرتبة قبل الحذف (دوراته تبقى مع created_by_id = null إن كان القيد كذلك في قاعدة البيانات) */
 export async function deleteTeacherUser(userId: string): Promise<void> {
   const u = await getUserById(userId);
   if (!u) throw new Error("المستخدم غير موجود");
-  if (u.role !== "TEACHER") throw new Error("يمكن حذف حسابات المدرسين فقط");
+  if (u.role !== "TEACHER") throw new Error("يمكن حذف حسابات المدربين فقط");
   await sql`DELETE FROM "User" WHERE id = ${userId}`;
 }
 
-/** عملاء لديهم تسجيل في أي كورس أنشأه المدرس */
+/** عملاء لديهم تسجيل في أي كورس أنشأه المدرب */
 export async function getStudentsEnrolledInTeacherCourses(teacherId: string): Promise<User[]> {
   const rows = await sql`
     SELECT DISTINCT u.*

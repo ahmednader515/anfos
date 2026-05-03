@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { Session } from "next-auth";
 import {
   getCategories,
-  getCoursesPublished,
   getReviews,
   listActiveSubscriptionPlansPublic,
   listStoreProductsPublic,
@@ -10,7 +9,6 @@ import {
   selectTeachersForHomepagePreview,
   userHasActivePlatformSubscription,
   getLatestPlatformSubscriptionExpiry,
-  getSubCategoriesPublicByParent,
 } from "@/lib/db";
 import type { HomepageSetting } from "@/lib/types";
 import { HomeTeachersSection } from "@/components/HomeTeachersSection";
@@ -21,9 +19,7 @@ import { parsePlatformDetailsItems } from "@/lib/platform-details";
 import { parsePlatformNewsItems } from "@/lib/platform-news";
 import { HomePlatformNewsSlider } from "@/components/HomePlatformNewsSlider";
 import { RevealOnScroll } from "@/components/RevealOnScroll";
-
-type CourseWithCategory = Awaited<ReturnType<typeof getCoursesPublished>>[number];
-type SubCategoryRow = Awaited<ReturnType<typeof getSubCategoriesPublicByParent>>[number];
+import { BrowseImageCard } from "@/components/BrowseImageCard";
 
 export async function HomePageBelowFold({
   homepageSettings,
@@ -32,13 +28,11 @@ export async function HomePageBelowFold({
   homepageSettings: HomepageSetting;
   session: Session | null;
 }) {
-  let courses: CourseWithCategory[] = [];
   let categories: Awaited<ReturnType<typeof getCategories>> = [];
   let reviews: Awaited<ReturnType<typeof getReviews>> = [];
   let teachersForHome: Awaited<ReturnType<typeof listTeachersForHomepage>> = [];
   let subscriptionPlansHome: Awaited<ReturnType<typeof listActiveSubscriptionPlansPublic>> = [];
   let storeProductsHome: Awaited<ReturnType<typeof listStoreProductsPublic>> = [];
-  let subCategories: SubCategoryRow[] = [];
 
   if (homepageSettings.teachersEnabled) {
     try {
@@ -81,26 +75,9 @@ export async function HomePageBelowFold({
   }
 
   try {
-    [courses, categories] = await Promise.all([getCoursesPublished(true), getCategories()]);
+    categories = await getCategories();
   } catch {
     // لا قاعدة بيانات أو غير متصلة
-  }
-
-  try {
-    subCategories = await getSubCategoriesPublicByParent({ parentSubCategoryId: null });
-  } catch {
-    subCategories = [];
-  }
-
-  if (homepageSettings.teachersEnabled && teachersForHome.length > 0) {
-    const teacherAccountIds = new Set(teachersForHome.map((t) => t.id));
-    courses = courses.filter((c) => {
-      const creator =
-        (c as { createdById?: string | null }).createdById ??
-        (c as { created_by_id?: string | null }).created_by_id ??
-        null;
-      return !creator || !teacherAccountIds.has(creator);
-    });
   }
 
   try {
@@ -120,27 +97,6 @@ export async function HomePageBelowFold({
           return row;
         })
       : [];
-
-  const categoryIdToSubCategories = new Map<string, SubCategoryRow[]>();
-  for (const sc of subCategories) {
-    const cid =
-      String((sc as { categoryId?: unknown }).categoryId ?? (sc as { category_id?: unknown }).category_id ?? "").trim();
-    if (!cid) continue;
-    if (!categoryIdToSubCategories.has(cid)) categoryIdToSubCategories.set(cid, []);
-    categoryIdToSubCategories.get(cid)!.push(sc);
-  }
-
-  const sections: { title: string; slug?: string; subcategories: SubCategoryRow[] }[] = [];
-  for (const cat of categories) {
-    const list = categoryIdToSubCategories.get(cat.id) ?? [];
-    if (list.length > 0) {
-      sections.push({
-        title: (cat as { nameAr?: string | null }).nameAr ?? cat.name,
-        slug: cat.slug,
-        subcategories: list,
-      });
-    }
-  }
 
   const platformDetailsItems = parsePlatformDetailsItems(homepageSettings.platformDetailsItems);
 
@@ -179,92 +135,42 @@ export async function HomePageBelowFold({
         </RevealOnScroll>
       ) : null}
 
-      {sections.length > 0
-        ? sections.map((section, idx) => (
-            <RevealOnScroll key={section.slug ?? `uncategorized-${idx}`}>
-              <section className="mx-auto min-w-0 max-w-6xl bg-white px-4 py-16 dark:bg-[var(--color-background)] sm:px-6">
-              <div className="relative flex items-center justify-center">
-                <h2 className="text-center text-2xl font-extrabold text-[var(--color-foreground)] sm:text-3xl">
-                  {section.title}
-                </h2>
-                <Link
-                  href={section.slug ? `/courses?category=${encodeURIComponent(section.slug)}` : "/courses"}
-                  className="absolute left-0 text-sm font-medium text-[var(--color-primary)] hover:underline"
-                >
-                  عرض الكل ←
-                </Link>
-              </div>
-              <p className="mt-2 text-center text-sm text-[var(--color-muted)] sm:text-base">
-                {section.slug ? `دورات قسم ${section.title}` : "دورات بدون تصنيف"}
-              </p>
+      {categories.length > 0 ? (
+        <RevealOnScroll>
+          <section className="mx-auto min-w-0 max-w-6xl bg-white px-3 py-16 dark:bg-[var(--color-background)] sm:px-6">
+            <h2 className="text-center text-2xl font-extrabold text-[var(--color-foreground)] sm:text-3xl">
+              اقسام المنصة
+            </h2>
+            <p className="mt-2 text-center text-sm text-[var(--color-muted)] sm:text-base">
+              اختر القسم المناسب لك ثم تصفّح الأقسام الفرعية والدورات داخله
+            </p>
 
-              <div className="mt-8 grid w-full min-w-0 gap-3 [grid-template-columns:repeat(2,minmax(0,1fr))] sm:gap-4 lg:[grid-template-columns:repeat(4,minmax(0,1fr))]">
-                {section.subcategories.slice(0, 8).map((sc) => {
-                  const title =
-                    String((sc as { nameAr?: unknown }).nameAr ?? (sc as { name_ar?: unknown }).name_ar ?? sc.name ?? "").trim();
-                  const scSlug = String((sc as { slug?: unknown }).slug ?? "").trim();
-                  const href = scSlug ? `/courses?subcategory=${encodeURIComponent(scSlug)}` : "/courses";
-                  const img =
-                    (sc as { imageUrl?: string | null }).imageUrl ??
-                    (sc as { image_url?: string | null }).image_url ??
-                    null;
-
-                  return (
-                    <Link
-                      key={String((sc as { id?: unknown }).id ?? "")}
-                      href={href}
-                      className="group relative block min-w-0 max-w-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] transition hover:shadow-[var(--shadow-hover)]"
-                    >
-                      <div className="aspect-[16/10] w-full bg-black/5">
-                        {img ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={img}
-                            alt=""
-                            className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[var(--color-primary)]/20 to-[var(--color-primary-light)]/30">
-                            <span className="text-4xl opacity-60">📚</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div
-                        className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-emerald-900/80 via-emerald-900/35 to-transparent"
-                        aria-hidden
-                      />
-
-                      <div className="absolute inset-x-0 bottom-0 z-10 p-3">
-                        <div className="flex items-end justify-between gap-3">
-                          <p className="min-w-0 truncate text-sm font-extrabold text-white drop-shadow sm:text-base">
-                            {title}
-                          </p>
-                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/25 bg-black/10 text-lg font-bold leading-none text-white drop-shadow transition group-hover:bg-black/20">
-                            ←
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-              {section.subcategories.length > 8 && (
-                <div className="mt-6 text-center">
-                  <Link
-                    href={section.slug ? `/courses?category=${encodeURIComponent(section.slug)}` : "/courses"}
-                    className="text-sm font-medium text-[var(--color-primary)] hover:underline"
-                  >
-                    عرض كل الأقسام الفرعية ({section.subcategories.length})
-                  </Link>
-                </div>
-              )}
-              </section>
-            </RevealOnScroll>
-          ))
-        : null}
+            <div className="mt-8 grid w-full min-w-0 gap-2 [grid-template-columns:repeat(2,minmax(0,1fr))] sm:gap-4 lg:[grid-template-columns:repeat(4,minmax(0,1fr))]">
+              {categories.map((cat) => {
+                const title =
+                  String((cat as { nameAr?: unknown }).nameAr ?? (cat as { name_ar?: unknown }).name_ar ?? cat.name ?? "").trim();
+                const slug = String(cat.slug ?? "").trim();
+                const img =
+                  (cat as { imageUrl?: string | null }).imageUrl ??
+                  (cat as { image_url?: string | null }).image_url ??
+                  null;
+                const subtitle =
+                  String((cat as { description?: unknown }).description ?? "").trim() || null;
+                const href = slug ? `/categories/${encodeURIComponent(slug)}` : "/courses";
+                return (
+                  <BrowseImageCard
+                    key={String(cat.id ?? slug ?? title)}
+                    href={href}
+                    title={title || "قسم"}
+                    imageUrl={img}
+                    subtitle={subtitle}
+                  />
+                );
+              })}
+            </div>
+          </section>
+        </RevealOnScroll>
+      ) : null}
 
       {homepageSettings.storeEnabled && storeProductsHome.length > 0 ? (
         <RevealOnScroll>

@@ -16,7 +16,7 @@ type StaffItem = { id: string; role: string };
 
 function staffRoleToLabel(role: string): string {
   if (role === "ADMIN") return "أدمن";
-  if (role === "TEACHER") return "مدرس";
+  if (role === "TEACHER") return "مدرب";
   return "مساعد الأدمن";
 }
 

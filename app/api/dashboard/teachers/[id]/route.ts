@@ -19,7 +19,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const { id } = await params;
   const target = await getUserById(id);
   if (!target || target.role !== "TEACHER") {
-    return NextResponse.json({ error: "المدرس غير موجود" }, { status: 404 });
+    return NextResponse.json({ error: "المدرب غير موجود" }, { status: 404 });
   }
 
   let body: {
@@ -113,7 +113,7 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
   }
   const target = await getUserById(id);
   if (!target || target.role !== "TEACHER") {
-    return NextResponse.json({ error: "المدرس غير موجود" }, { status: 404 });
+    return NextResponse.json({ error: "المدرب غير موجود" }, { status: 404 });
   }
   try {
     await deleteTeacherUser(id);

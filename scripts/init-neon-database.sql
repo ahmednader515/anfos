@@ -277,7 +277,7 @@ CREATE TABLE IF NOT EXISTS "Review" (
 );
 CREATE INDEX IF NOT EXISTS "Review_order_idx" ON "Review"("order");
 
--- 13) إعدادات الصفحة الرئيسية (صورة المدرس، النصوص، روابط واتساب/فيسبوك، عنوان التبويب، لون الهيرو، نصوص الفوتر)
+-- 13) إعدادات الصفحة الرئيسية (صورة المدرب، النصوص، روابط واتساب/فيسبوك، عنوان التبويب، لون الهيرو، نصوص الفوتر)
 CREATE TABLE IF NOT EXISTS "HomepageSetting" (
   id                  TEXT PRIMARY KEY DEFAULT 'default',
   teacher_image_url   TEXT,

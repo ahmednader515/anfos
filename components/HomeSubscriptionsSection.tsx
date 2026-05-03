@@ -2,7 +2,7 @@
 
 import { SubscriptionPlanCard, type SubscriptionPlanCardData } from "@/components/SubscriptionPlanCard";
 
-/** قسم الصفحة الرئيسية «الاشتراكات المتاحة» — نفس سلم العناوين مثل «اختر المدرسين» */
+/** قسم الصفحة الرئيسية «الاشتراكات المتاحة» — نفس سلم العناوين مثل «اختر المدربين» */
 export function HomeSubscriptionsSection({
   enabled,
   plans,

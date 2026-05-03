@@ -232,7 +232,7 @@ html.dark .hero-wave-fill {
   animation: loading-dot 1.4s ease-in-out infinite both;
 }
 
-/* حركة طفو خفيفة لأيقونات المدرس */
+/* حركة طفو خفيفة لأيقونات المدرب */
 @keyframes float-gentle {
   0%, 100% {
     transform: translateY(0);
@@ -339,7 +339,7 @@ html.dark .hero-wave-fill {
   }
 }
 
-/* قسم «اختر المدرسين» في الرئيسية: تدرج يبدأ بلون الهيدر/السطح — بدون border يُظهر خطاً فاصلاً */
+/* قسم «اختر المدربين» في الرئيسية: تدرج يبدأ بلون الهيدر/السطح — بدون border يُظهر خطاً فاصلاً */
 .home-teachers-hero-blend {
   background: linear-gradient(
     180deg,

@@ -450,7 +450,7 @@ export function HomepageSettingsForm({
             />
             <span>
               <span className="block text-sm font-semibold text-[var(--color-foreground)]">القالب الأول (الحالي)</span>
-              <span className="text-xs text-[var(--color-muted)]">النجوم + صورة المدرس + النصوص الحالية</span>
+              <span className="text-xs text-[var(--color-muted)]">النجوم + صورة المدرب + النصوص الحالية</span>
             </span>
           </label>
 
@@ -746,7 +746,7 @@ export function HomepageSettingsForm({
       </div>
 
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
-        <h3 className="mb-4 text-lg font-semibold text-[var(--color-foreground)]">صورة المدرس</h3>
+        <h3 className="mb-4 text-lg font-semibold text-[var(--color-foreground)]">صورة المدرب</h3>
         <p className="mb-3 text-sm text-[var(--color-muted)]">
           تظهر في الصفحة الرئيسية بجانب العنوان. يمكنك رفع صورة أو إدخال رابط صورة.
         </p>
@@ -802,9 +802,9 @@ export function HomepageSettingsForm({
         />
 
         <div className="mt-6">
-          <h4 className="mb-2 text-sm font-semibold text-[var(--color-foreground)]">لون خلفية الهيرو (وراء صورة المدرس)</h4>
+          <h4 className="mb-2 text-sm font-semibold text-[var(--color-foreground)]">لون خلفية الهيرو (وراء صورة المدرب)</h4>
           <p className="mb-3 text-sm text-[var(--color-muted)]">
-            اختر تدرجاً جاهزاً، أو لونين مخصّصين (منتقي الألوان + كود hex) ليظهرا في الصفحة الرئيسية خلف صورة المدرس والعنوان.
+            اختر تدرجاً جاهزاً، أو لونين مخصّصين (منتقي الألوان + كود hex) ليظهرا في الصفحة الرئيسية خلف صورة المدرب والعنوان.
           </p>
           <div className="mb-4 flex flex-wrap gap-6">
             <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--color-foreground)]">
@@ -1029,9 +1029,9 @@ export function HomepageSettingsForm({
       </div>
 
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
-        <h3 className="mb-2 text-lg font-semibold text-[var(--color-foreground)]">الصور الصغيرة العائمة حول صورة المدرس</h3>
+        <h3 className="mb-2 text-lg font-semibold text-[var(--color-foreground)]">الصور الصغيرة العائمة حول صورة المدرب</h3>
         <p className="mb-4 text-sm text-[var(--color-muted)]">
-          تظهر هذه الصور بجانب صورة المدرس في الصفحة الرئيسية. يمكنك إدخال رابط لكل صورة أو ترك الحقل فارغاً لاستخدام الافتراضي.
+          تظهر هذه الصور بجانب صورة المدرب في الصفحة الرئيسية. يمكنك إدخال رابط لكل صورة أو ترك الحقل فارغاً لاستخدام الافتراضي.
         </p>
         <div className="space-y-4">
           <div>

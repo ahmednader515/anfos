@@ -11,7 +11,7 @@ type Props = {
   titleTag?: "h2" | "h3";
 };
 
-/** بطاقة مدرس — التخصص وقائمة دوراته المنشورة داخل البطاقة فقط */
+/** بطاقة مدرب — التخصص وقائمة دوراته المنشورة داخل البطاقة فقط */
 export function TeacherPublicCard({
   teacherId,
   name,
@@ -20,7 +20,7 @@ export function TeacherPublicCard({
   courses,
   titleTag: TitleTag = "h3",
 }: Props) {
-  const subject = teacherSubject?.trim() || "مدرس على المنصة";
+  const subject = teacherSubject?.trim() || "مدرب على المنصة";
   const profileHref = `/courses?teacher=${encodeURIComponent(teacherId)}`;
   const previewCourses = courses.slice(0, 2);
   const moreCount = courses.length > 2 ? courses.length - 2 : 0;
@@ -87,12 +87,12 @@ export function TeacherPublicCard({
               href={profileHref}
               className="mt-3 block text-center text-xs font-medium text-[var(--color-primary)] underline-offset-2 hover:underline"
             >
-              صفحة جميع دورات المدرس ←
+              صفحة جميع دورات المدرب ←
             </Link>
           </>
         ) : (
           <p className="px-1 text-center text-xs leading-relaxed text-[var(--color-muted)]">
-            لا توجد دورات منشورة ضمن بطاقة هذا المدرس حتى الآن.
+            لا توجد دورات منشورة ضمن بطاقة هذا المدرب حتى الآن.
           </p>
         )}
       </div>

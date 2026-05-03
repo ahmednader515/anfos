@@ -39,7 +39,7 @@ export function TeacherPublicProfileForm({ defaultSubject, defaultAvatarUrl }: P
       setError(data.error ?? "فشل التحديث");
       return;
     }
-    setSuccess("تم حفظ الملف العام للمدرس");
+    setSuccess("تم حفظ الملف العام للمدرب");
     router.refresh();
   }
 
@@ -47,7 +47,7 @@ export function TeacherPublicProfileForm({ defaultSubject, defaultAvatarUrl }: P
     <div className="mt-10 max-w-md rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)]/60 p-6 shadow-[var(--shadow-card)]">
       <h3 className="text-lg font-semibold text-[var(--color-foreground)]">الملف الظاهر للعملاء</h3>
       <p className="mt-1 text-sm text-[var(--color-muted)]">
-        الاسم وكلمة المرور من النموذج أعلاه. هنا تظهر صورتك والمادة في صفحة «اختر المدرسين» بعد نشر كورس لك على الأقل.
+        الاسم وكلمة المرور من النموذج أعلاه. هنا تظهر صورتك والمادة في صفحة «اختر المدربين» بعد نشر كورس لك على الأقل.
       </p>
       <form onSubmit={handleSubmit} className="mt-4 space-y-4">
         {error ? (

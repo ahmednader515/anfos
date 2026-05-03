@@ -120,7 +120,7 @@ export function TeachersAdminClient({
     }
     setEnabled(next);
     if (!next) setTeachers([]);
-    setSuccess(next ? "تم تفعيل عرض المدرسين وإنشاء الحسابات" : "تم إيقاف الميزة — اختفى رابط «اختر المدرسين» من الموقع");
+    setSuccess(next ? "تم تفعيل عرض المدربين وإنشاء الحسابات" : "تم إيقاف الميزة — اختفى رابط «اختر المدربين» من الموقع");
     router.refresh();
   }
 
@@ -148,7 +148,7 @@ export function TeachersAdminClient({
       setError(data.error ?? "فشل إنشاء الحساب");
       return;
     }
-    setSuccess("تم إنشاء حساب المدرس");
+    setSuccess("تم إنشاء حساب المدرب");
     setName("");
     setEmail("");
     setPhone("");
@@ -207,7 +207,7 @@ export function TeachersAdminClient({
       setError(data.error ?? "فشل التحديث");
       return;
     }
-    setSuccess("تم تحديث بيانات المدرس");
+    setSuccess("تم تحديث بيانات المدرب");
     closeEdit();
     await reloadTeachers();
     router.refresh();
@@ -215,7 +215,7 @@ export function TeachersAdminClient({
 
   async function removeTeacher(t: TeacherRow) {
     const ok = window.confirm(
-      `حذف حساب المدرس «${t.name}» نهائياً؟ لا يمكن التراجع. الدورات التي أنشأها قد تبقى على المنصة دون مالك إن كان إعداد قاعدة البيانات يضبط ذلك.`,
+      `حذف حساب المدرب «${t.name}» نهائياً؟ لا يمكن التراجع. الدورات التي أنشأها قد تبقى على المنصة دون مالك إن كان إعداد قاعدة البيانات يضبط ذلك.`,
     );
     if (!ok) return;
     setError("");
@@ -229,7 +229,7 @@ export function TeachersAdminClient({
       setError(data.error ?? "فشل الحذف");
       return;
     }
-    setSuccess("تم حذف حساب المدرس");
+    setSuccess("تم حذف حساب المدرب");
     if (editingId === t.id) closeEdit();
     await reloadTeachers();
     router.refresh();
@@ -292,7 +292,7 @@ export function TeachersAdminClient({
       setError(typeof data.error === "string" ? data.error : "فشل الحفظ");
       return;
     }
-    setSuccess("تم حفظ مدرسي الصفحة الرئيسية والترتيب");
+    setSuccess("تم حفظ مدربي الصفحة الرئيسية والترتيب");
     await reloadTeachers();
     router.refresh();
   }
@@ -300,9 +300,9 @@ export function TeachersAdminClient({
   return (
     <div className="space-y-8">
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]">
-        <h2 className="text-lg font-semibold text-[var(--color-foreground)]">تعدد المدرسين على المنصة</h2>
+        <h2 className="text-lg font-semibold text-[var(--color-foreground)]">تعدد المدربين على المنصة</h2>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
-          عند التفعيل يظهر في الموقع قسم «اختر المدرسين»، ويُسمح لك بإنشاء حسابات برتبة مدرس. عند الإيقاف يختفي القسم ولا يمكن إنشاء مدرسين جدد حتى إعادة التفعيل.
+          عند التفعيل يظهر في الموقع قسم «اختر المدربين»، ويُسمح لك بإنشاء حسابات برتبة مدرب. عند الإيقاف يختفي القسم ولا يمكن إنشاء مدربين جدد حتى إعادة التفعيل.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <button
@@ -335,13 +335,13 @@ export function TeachersAdminClient({
       {enabled ? (
         <>
           <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]">
-            <h2 className="text-lg font-semibold text-[var(--color-foreground)]">إنشاء حساب مدرس</h2>
+            <h2 className="text-lg font-semibold text-[var(--color-foreground)]">إنشاء حساب مدرب</h2>
             <p className="mt-1 text-sm text-[var(--color-muted)]">
-              البريد أو رقم الهاتف (10 أرقام على الأقل) لتسجيل الدخول كما في العملاء. كلمة المرور تسلّم للمدرس بشكل آمن خارج المنصة. يمكنك ضبط المادة والصورة كما في تعديل الملف الشخصي للمدرس (اختياري).
+              البريد أو رقم الهاتف (10 أرقام على الأقل) لتسجيل الدخول كما في العملاء. كلمة المرور تسلّم للمدرب بشكل آمن خارج المنصة. يمكنك ضبط المادة والصورة كما في تعديل الملف الشخصي للمدرب (اختياري).
             </p>
             <form onSubmit={createTeacher} className="mt-4 grid max-w-2xl gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-[var(--color-foreground)]">اسم المدرس</label>
+                <label className="block text-sm font-medium text-[var(--color-foreground)]">اسم المدرب</label>
                 <input
                   required
                   value={name}
@@ -384,7 +384,7 @@ export function TeachersAdminClient({
               </div>
               <div className="sm:col-span-2">
                 <span className="block text-sm font-medium text-[var(--color-foreground)]">صورة الملف الظاهر للعملاء (اختياري)</span>
-                <p className="mt-1 text-xs text-[var(--color-muted)]">اتركها فارغة إن لم ترد رفع صورة الآن؛ يمكن للمدرس تعديلها لاحقاً من ملفه الشخصي.</p>
+                <p className="mt-1 text-xs text-[var(--color-muted)]">اتركها فارغة إن لم ترد رفع صورة الآن؛ يمكن للمدرب تعديلها لاحقاً من ملفه الشخصي.</p>
                 {avatarUrl ? (
                   <div className="mt-2 flex flex-wrap items-center gap-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -445,7 +445,7 @@ export function TeachersAdminClient({
           </div>
 
           <div>
-            <h2 className="mb-3 text-lg font-semibold text-[var(--color-foreground)]">المدرسون الحاليون</h2>
+            <h2 className="mb-3 text-lg font-semibold text-[var(--color-foreground)]">المدربون الحاليون</h2>
 
             {teachers.length > 0 ? (
               <div
@@ -456,9 +456,9 @@ export function TeachersAdminClient({
                   من يظهر في الصفحة الرئيسية؟
                 </h3>
                 <p className="mt-2 text-sm text-[var(--color-muted)]">
-                  حدّد حتى أربعة مدرسين وترتيب بطاقات قسم «اختر المدرسين». الموضع 1 يظهر أولاً (يمين الواجهة العربية).
+                  حدّد حتى أربعة مدربين وترتيب بطاقات قسم «اختر المدربين». الموضع 1 يظهر أولاً (يمين الواجهة العربية).
                   إن تركت كل الخانات فارغة وحفظت، تُعرض أول أربعة أبجدياً. إن اخترت أقل من أربعة، يُكمّل تلقائياً
-                  ببقية المدرسين أبجدياً حتى أربع بطاقات.
+                  ببقية المدربين أبجدياً حتى أربع بطاقات.
                 </p>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {[0, 1, 2, 3].map((i) => (
@@ -509,7 +509,7 @@ export function TeachersAdminClient({
                   {teachers.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="px-4 py-8 text-center text-[var(--color-muted)]">
-                        لا يوجد مدرسون بعد.
+                        لا يوجد مدربون بعد.
                       </td>
                     </tr>
                   ) : (
@@ -571,7 +571,7 @@ export function TeachersAdminClient({
             onClick={(e) => e.stopPropagation()}
           >
             <h3 id="edit-teacher-title" className="text-lg font-semibold text-[var(--color-foreground)]">
-              تعديل بيانات المدرس
+              تعديل بيانات المدرب
             </h3>
             <form onSubmit={(e) => void submitEdit(e)} className="mt-4 space-y-4">
               <div>

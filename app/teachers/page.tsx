@@ -7,8 +7,8 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata = {
-  title: "اختر المدرسين | منصتي التعليمية",
-  description: "تصفح مدرسي المنصة والدورات المتاحة لكل مدرس",
+  title: "اختر المدربين | منصتي التعليمية",
+  description: "تصفح مدربي المنصة والدورات المتاحة لكل مدرب",
 };
 
 export default async function TeachersPage() {

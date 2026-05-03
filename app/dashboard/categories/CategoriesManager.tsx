@@ -76,6 +76,7 @@ export function CategoriesManager() {
 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [imageBusy, setImageBusy] = useState<string | null>(null);
+  const [subSearch, setSubSearch] = useState("");
 
   const filteredSubs = useMemo(() => {
     const cid = selectedCategoryId.trim();
@@ -106,6 +107,22 @@ export function CategoriesManager() {
     walk("__root__", 0);
     return out;
   }, [filteredSubs]);
+
+  const selectedCategory = useMemo(
+    () => categories.find((c) => c.id === selectedCategoryId) ?? null,
+    [categories, selectedCategoryId],
+  );
+
+  const visibleSubTree = useMemo(() => {
+    const q = subSearch.trim().toLowerCase();
+    if (!q) return subTree;
+    return subTree.filter(({ node }) => {
+      const n1 = node.name.toLowerCase();
+      const n2 = (node.nameAr ?? "").toLowerCase();
+      const n3 = node.slug.toLowerCase();
+      return n1.includes(q) || n2.includes(q) || n3.includes(q);
+    });
+  }, [subSearch, subTree]);
 
   async function loadAll() {
     setLoading(true);
@@ -318,12 +335,33 @@ export function CategoriesManager() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="space-y-6">
+      <section className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+        <h2 className="text-xl font-bold text-[var(--color-foreground)]">إدارة الأقسام والأقسام الفرعية</h2>
+        <p className="mt-1 text-sm text-[var(--color-muted)]">
+          1) أنشئ/عدّل القسم الرئيسي، 2) اختره، 3) أضف الأقسام الفرعية داخله ورتّبها.
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+          <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-1 text-[var(--color-muted)]">
+            عدد الأقسام: {categories.length}
+          </span>
+          <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-1 text-[var(--color-muted)]">
+            القسم المحدد: {selectedCategory?.nameAr?.trim() || selectedCategory?.name || "غير محدد"}
+          </span>
+          <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-1 text-[var(--color-muted)]">
+            الأقسام الفرعية الظاهرة: {visibleSubTree.length}
+          </span>
+        </div>
+      </section>
+
+      <div className="grid gap-6 lg:grid-cols-2">
       <section className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
         <div className="mb-4 flex items-end justify-between gap-4">
           <div>
             <h3 className="text-lg font-semibold text-[var(--color-foreground)]">الأقسام</h3>
-            <p className="mt-1 text-sm text-[var(--color-muted)]">أنشئ قسمًا ثم اختره لإدارة أقسامه الفرعية.</p>
+            <p className="mt-1 text-sm text-[var(--color-muted)]">
+              أنشئ قسمًا ثم اضغط على اسمه لتحديده وإدارة الأقسام الفرعية التابعة له.
+            </p>
           </div>
           <button
             type="button"
@@ -343,34 +381,47 @@ export function CategoriesManager() {
 
         <div className="mb-5 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-background)]/40 p-4">
           <p className="text-sm font-semibold text-[var(--color-foreground)]">إضافة قسم جديد</p>
+          <p className="mt-1 text-xs text-[var(--color-muted)]">
+            املأ الحقول الأساسية ثم اضغط «إنشاء». الحقول غير المطلوبة اختيارية.
+          </p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <input
-              value={createCat.name}
-              onChange={(e) => setCreateCat((s) => ({ ...s, name: e.target.value }))}
-              placeholder="اسم القسم *"
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
-            />
-            <input
-              value={createCat.nameAr}
-              onChange={(e) => setCreateCat((s) => ({ ...s, nameAr: e.target.value }))}
-              placeholder="اسم عربي (اختياري)"
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
-            />
-            <input
-              type="number"
-              value={createCat.order}
-              onChange={(e) => setCreateCat((s) => ({ ...s, order: Number(e.target.value) }))}
-              placeholder="ترتيب"
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
-            />
-            <div className="flex flex-wrap gap-2">
+            <label className="block">
+              <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">اسم القسم (مطلوب)</span>
+              <input
+                value={createCat.name}
+                onChange={(e) => setCreateCat((s) => ({ ...s, name: e.target.value }))}
+                placeholder="مثال: علم الفضاء"
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">الاسم العربي (اختياري)</span>
+              <input
+                value={createCat.nameAr}
+                onChange={(e) => setCreateCat((s) => ({ ...s, nameAr: e.target.value }))}
+                placeholder="مثال: علم الفضاء"
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">الترتيب</span>
+              <input
+                type="number"
+                value={createCat.order}
+                onChange={(e) => setCreateCat((s) => ({ ...s, order: Number(e.target.value) }))}
+                placeholder="0"
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">رابط الصورة (اختياري)</span>
               <input
                 value={createCat.imageUrl}
                 onChange={(e) => setCreateCat((s) => ({ ...s, imageUrl: e.target.value }))}
-                placeholder="صورة (رابط اختياري)"
-                className="min-w-[180px] flex-1 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+                placeholder="https://..."
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
               />
-            </div>
+            </label>
           </div>
           <div className="mt-3 flex items-center justify-between gap-3">
             <label className="cursor-pointer rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm hover:bg-[var(--color-border)]/40">
@@ -523,7 +574,9 @@ export function CategoriesManager() {
       <section className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-[var(--color-foreground)]">الأقسام الفرعية</h3>
-          <p className="mt-1 text-sm text-[var(--color-muted)]">اختر قسمًا لإدارة الأقسام الفرعية التابعة له.</p>
+          <p className="mt-1 text-sm text-[var(--color-muted)]">
+            اختر قسمًا رئيسيًا، ثم أضف أو عدّل الأقسام الفرعية داخله بهيكل شجري واضح.
+          </p>
         </div>
 
         <div className="mb-4">
@@ -542,51 +595,76 @@ export function CategoriesManager() {
           </select>
         </div>
 
+        {selectedCategory ? (
+          <div className="mb-4 rounded-[var(--radius-btn)] border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 px-3 py-2 text-sm text-[var(--color-foreground)]">
+            أنت تعدّل الآن: <span className="font-semibold">{selectedCategory.nameAr?.trim() || selectedCategory.name}</span>
+          </div>
+        ) : null}
+
         <div className="mb-5 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-background)]/40 p-4">
           <p className="text-sm font-semibold text-[var(--color-foreground)]">إضافة قسم فرعي جديد</p>
+          <p className="mt-1 text-xs text-[var(--color-muted)]">
+            اربط القسم الفرعي بالقسم المحدد، ويمكنك تحديد قسم أب لبناء مستويات متعددة.
+          </p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <input
-              value={createSub.name}
-              onChange={(e) => setCreateSub((s) => ({ ...s, name: e.target.value }))}
-              placeholder="اسم القسم الفرعي *"
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
-              disabled={!selectedCategoryId.trim()}
-            />
-            <input
-              value={createSub.nameAr}
-              onChange={(e) => setCreateSub((s) => ({ ...s, nameAr: e.target.value }))}
-              placeholder="اسم عربي (اختياري)"
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
-              disabled={!selectedCategoryId.trim()}
-            />
-            <input
-              type="number"
-              value={createSub.order}
-              onChange={(e) => setCreateSub((s) => ({ ...s, order: Number(e.target.value) }))}
-              placeholder="ترتيب"
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
-              disabled={!selectedCategoryId.trim()}
-            />
-            <input
-              value={createSub.imageUrl}
-              onChange={(e) => setCreateSub((s) => ({ ...s, imageUrl: e.target.value }))}
-              placeholder="صورة (رابط اختياري)"
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
-              disabled={!selectedCategoryId.trim()}
-            />
-            <select
-              value={createSub.parentId}
-              onChange={(e) => setCreateSub((s) => ({ ...s, parentId: e.target.value }))}
-              className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm disabled:opacity-60"
-              disabled={!selectedCategoryId.trim()}
-            >
-              <option value="">بدون أب (مستوى أول)</option>
-              {subTree.map(({ node, depth }) => (
-                <option key={node.id} value={node.id}>
-                  {"— ".repeat(depth)}{node.nameAr?.trim() || node.name}
-                </option>
-              ))}
-            </select>
+            <label className="block">
+              <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">اسم القسم الفرعي (مطلوب)</span>
+              <input
+                value={createSub.name}
+                onChange={(e) => setCreateSub((s) => ({ ...s, name: e.target.value }))}
+                placeholder="مثال: أساسيات الفضاء"
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+                disabled={!selectedCategoryId.trim()}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">الاسم العربي (اختياري)</span>
+              <input
+                value={createSub.nameAr}
+                onChange={(e) => setCreateSub((s) => ({ ...s, nameAr: e.target.value }))}
+                placeholder="مثال: أساسيات الفضاء"
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+                disabled={!selectedCategoryId.trim()}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">الترتيب</span>
+              <input
+                type="number"
+                value={createSub.order}
+                onChange={(e) => setCreateSub((s) => ({ ...s, order: Number(e.target.value) }))}
+                placeholder="0"
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+                disabled={!selectedCategoryId.trim()}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">رابط الصورة (اختياري)</span>
+              <input
+                value={createSub.imageUrl}
+                onChange={(e) => setCreateSub((s) => ({ ...s, imageUrl: e.target.value }))}
+                placeholder="https://..."
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+                disabled={!selectedCategoryId.trim()}
+              />
+            </label>
+            <label className="block sm:col-span-2">
+              <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">القسم الأب (اختياري)</span>
+              <select
+                value={createSub.parentId}
+                onChange={(e) => setCreateSub((s) => ({ ...s, parentId: e.target.value }))}
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm disabled:opacity-60"
+                disabled={!selectedCategoryId.trim()}
+              >
+                <option value="">بدون أب (مستوى أول)</option>
+                {subTree.map(({ node, depth }) => (
+                  <option key={node.id} value={node.id}>
+                    {"— ".repeat(depth)}
+                    {node.nameAr?.trim() || node.name}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           <div className="mt-3 flex items-center justify-between gap-3">
             <label className="cursor-pointer rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm hover:bg-[var(--color-border)]/40">
@@ -634,16 +712,33 @@ export function CategoriesManager() {
           </div>
         ) : (
           <div className="space-y-3">
-            {subTree.map(({ node: s, depth }) => (
+            <div className="rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)]/40 p-3">
+              <input
+                value={subSearch}
+                onChange={(e) => setSubSearch(e.target.value)}
+                placeholder="بحث داخل الأقسام الفرعية بالاسم أو الـ slug..."
+                className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+              />
+            </div>
+
+            {visibleSubTree.length === 0 ? (
+              <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-background)]/30 p-6 text-center text-[var(--color-muted)]">
+                لا توجد نتائج مطابقة للبحث.
+              </div>
+            ) : null}
+
+            {visibleSubTree.map(({ node: s, depth }) => (
               <div
                 key={s.id}
                 className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-background)]/20 p-4"
+                style={{ marginInlineStart: `${Math.min(depth, 6) * 10}px` }}
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="text-sm font-semibold text-[var(--color-foreground)]">
-                    <span style={{ marginInlineStart: `${depth * 14}px` }}>
-                      {s.nameAr?.trim() || s.name}
+                    <span className="rounded bg-[var(--color-background)] px-2 py-0.5 text-xs text-[var(--color-muted)]">
+                      مستوى {depth + 1}
                     </span>
+                    <span className="ms-2">{s.nameAr?.trim() || s.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -750,6 +845,7 @@ export function CategoriesManager() {
           </div>
         )}
       </section>
+      </div>
     </div>
   );
 }

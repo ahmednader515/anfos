@@ -250,7 +250,7 @@ export function SubscriptionsAdminClient({
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]">
         <h3 className="text-lg font-semibold text-[var(--color-foreground)]">ظهور قسم الاشتراكات في الموقع</h3>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
-          عند التفعيل يظهر في الصفحة الرئيسية قسم «الاشتراكات المتاحة» بنفس أسلوب عنوان «اختر المدرسين». عند الإيقاف يختفي القسم ولا يمكن للعملاء شراء باقات جديدة من الصفحة الرئيسية.
+          عند التفعيل يظهر في الصفحة الرئيسية قسم «الاشتراكات المتاحة» بنفس أسلوب عنوان «اختر المدربين». عند الإيقاف يختفي القسم ولا يمكن للعملاء شراء باقات جديدة من الصفحة الرئيسية.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <button

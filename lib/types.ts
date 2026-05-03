@@ -13,7 +13,7 @@ export interface User {
   balance: string;
   student_number?: string | null;
   guardian_number?: string | null;
-  /** عنوان المادة / التخصص — يظهر في «اختر المدرسين» */
+  /** عنوان المادة / التخصص — يظهر في «اختر المدربين» */
   teacher_subject?: string | null;
   teacher_avatar_url?: string | null;
   /** 1–4 لترتيب البطاقة في الرئيسية؛ null = تلقائي بعد المحددين */
@@ -66,7 +66,7 @@ export interface Review {
 }
 
 /**
- * مفتاح تدرج خلفية الهيرو الجاهز (وراء صورة المدرس).
+ * مفتاح تدرج خلفية الهيرو الجاهز (وراء صورة المدرب).
  * عند تعبئة heroBgCustomFrom و heroBgCustomTo بصيغة hex صالحة يُستخدم التدرج المخصّص بدلاً من المفتاح.
  */
 export type HeroBgPreset =
@@ -131,7 +131,7 @@ export interface HomepageSetting {
   heroBgCustomFrom?: string | null;
   /** لون أسفل التدرج المخصّص (#RRGGBB) */
   heroBgCustomTo?: string | null;
-  /** روابط الصور الصغيرة العائمة حول صورة المدرس (1: يسار أعلى، 2: يمين أسفل، 3: أسفل يسار) */
+  /** روابط الصور الصغيرة العائمة حول صورة المدرب (1: يسار أعلى، 2: يمين أسفل، 3: أسفل يسار) */
   heroFloatImage1: string | null;
   heroFloatImage2: string | null;
   heroFloatImage3: string | null;
@@ -187,7 +187,7 @@ export interface HomepageSetting {
   ctaDescription?: string | null;
   /** نص زر CTA */
   ctaButtonText?: string | null;
-  /** عند true تظهر صفحة «اختر المدرسين» ويُسمح بحسابات TEACHER */
+  /** عند true تظهر صفحة «اختر المدربين» ويُسمح بحسابات TEACHER */
   teachersEnabled?: boolean;
   /** عند true يظهر قسم «الاشتراكات المتاحة» ويُفعّل شراء باقات الوصول لكل الدورات المدفوعة */
   subscriptionsEnabled?: boolean;

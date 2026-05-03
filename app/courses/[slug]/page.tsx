@@ -152,14 +152,14 @@ export default async function CoursePage({ params }: Props) {
       )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[280px_1fr]">
-        {/* قسم المدرس */}
+        {/* قسم المدرب */}
         <aside className="order-2 lg:order-1">
           <div className="sticky top-24 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]">
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-4">
                 <img
                   src={homepageSettings.teacherImageUrl?.trim() || "/instructor.png"}
-                  alt={homepageSettings.heroTitle?.trim() || "المدرس"}
+                  alt={homepageSettings.heroTitle?.trim() || "المدرب"}
                   className="h-32 w-32 border-2 border-black border-dotted object-cover"
                 />
                 <div className="absolute bottom-0 right-0 h-6 w-6 rounded-full border-4 border-[var(--color-surface)] bg-[var(--color-success)]" />

@@ -277,7 +277,7 @@ export function QuizTake({ quiz }: { quiz: QuizApiPayload }) {
             نتيجتك في الأسئلة الاختيارية وصح/خطأ: {score} من {totalScored}
           </p>
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            الأسئلة المقالية لا تُصحح تلقائياً؛ يمكن للمدرس مراجعتها لاحقاً.
+            الأسئلة المقالية لا تُصحح تلقائياً؛ يمكن للمدرب مراجعتها لاحقاً.
           </p>
         </div>
       )}

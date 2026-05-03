@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { categoryIsManageableOnDashboard, deleteCategory, updateCategory } from "@/lib/db";
 
-/** حذف قسم — الأدمن/المساعد: أقسام المنصة وأقسام الأدمن فقط؛ المدرس: أقسامه فقط. الدورات المرتبطة تصبح بدون قسم */
+/** حذف قسم — الأدمن/المساعد: أقسام المنصة وأقسام الأدمن فقط؛ المدرب: أقسامه فقط. الدورات المرتبطة تصبح بدون قسم */
 export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }

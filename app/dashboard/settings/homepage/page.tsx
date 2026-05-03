@@ -34,7 +34,7 @@ export default async function DashboardHomepageSettingsPage() {
         إعدادات الصفحة الرئيسية
       </h2>
       <p className="mt-1 text-sm text-[var(--color-muted)]">
-        غيّر صورة المدرس والعنوان والشعار واسم المنصة الظاهر في أعلى الموقع وفي الصفحة الرئيسية.
+        غيّر صورة المدرب والعنوان والشعار واسم المنصة الظاهر في أعلى الموقع وفي الصفحة الرئيسية.
       </p>
       <HomepageSettingsForm initialSettings={settings} publishedCourses={publishedCourses} />
     </div>
