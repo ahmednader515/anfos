@@ -24,6 +24,7 @@ import type {
   PlatformDetailsItem,
 } from "./types";
 import { generateCopyrightCodeCandidate } from "./copyright-code";
+import { serializeHomepageBelowFoldSectionsOrder } from "./homepage-sections";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL غير معرّف");
@@ -1210,6 +1211,7 @@ const HOMEPAGE_DEFAULTS: HomepageSetting = {
   platformNewsEnabled: false,
   platformNewsItems: "[]",
   platformNewsSectionTitle: "أخبار المنصة",
+  homepageSectionsOrder: serializeHomepageBelowFoldSectionsOrder(null),
   addBalanceTitle: "إضافة رصيد",
   addBalanceSubtitle: "اختر طريقة الدفع ثم اتبع التعليمات",
   addBalanceMethodTitle: "فودافون كاش",
@@ -1382,6 +1384,15 @@ async function ensureHomepagePlatformNewsColumns(): Promise<void> {
     await sql`ALTER TABLE "HomepageSetting" ADD COLUMN IF NOT EXISTS platform_news_enabled BOOLEAN NOT NULL DEFAULT false`;
     await sql`ALTER TABLE "HomepageSetting" ADD COLUMN IF NOT EXISTS platform_news_items TEXT`;
     await sql`ALTER TABLE "HomepageSetting" ADD COLUMN IF NOT EXISTS platform_news_section_title TEXT`;
+  } catch {
+    /* DDL غير متاح */
+  }
+}
+
+/** ترتيب أقسام الصفحة الرئيسية أسفل الهيرو */
+async function ensureHomepageSectionsOrderColumn(): Promise<void> {
+  try {
+    await sql`ALTER TABLE "HomepageSetting" ADD COLUMN IF NOT EXISTS homepage_sections_order TEXT`;
   } catch {
     /* DDL غير متاح */
   }
@@ -1611,6 +1622,7 @@ async function getHomepageSettingsUncached(): Promise<HomepageSetting> {
     await ensureHomepageYoutubeColumn();
     await ensureHomepagePlatformDetailsColumns();
     await ensureHomepagePlatformNewsColumns();
+    await ensureHomepageSectionsOrderColumn();
     const rows = await sql`SELECT * FROM "HomepageSetting" WHERE id = 'default' LIMIT 1`;
     const row = rows[0] as Record<string, unknown> | undefined;
     if (!row) return HOMEPAGE_DEFAULTS;
@@ -1902,6 +1914,12 @@ async function getHomepageSettingsUncached(): Promise<HomepageSetting> {
         if (s.length > 0) return s.slice(0, 240);
         return HOMEPAGE_DEFAULTS.platformNewsSectionTitle ?? "أخبار المنصة";
       })(),
+      homepageSectionsOrder: (() => {
+        const raw =
+          row.homepage_sections_order ??
+          (c as { homepageSectionsOrder?: unknown }).homepageSectionsOrder;
+        return serializeHomepageBelowFoldSectionsOrder(raw);
+      })(),
       addBalanceTitle: (c.addBalanceTitle as string) ?? HOMEPAGE_DEFAULTS.addBalanceTitle,
       addBalanceSubtitle:
         (c.addBalanceSubtitle as string) ?? HOMEPAGE_DEFAULTS.addBalanceSubtitle,
@@ -2015,6 +2033,7 @@ export async function updateHomepageSettings(data: {
   platform_news_enabled?: boolean;
   platform_news_items?: string | null;
   platform_news_section_title?: string | null;
+  homepage_sections_order?: string | null;
 }): Promise<void> {
   await ensureHomepageHeroTemplateColumns();
   await ensureHomepageHeroSliderCourseIdColumns();
@@ -2028,6 +2047,7 @@ export async function updateHomepageSettings(data: {
   await ensureHomepageYoutubeColumn();
   await ensureHomepagePlatformDetailsColumns();
   await ensureHomepagePlatformNewsColumns();
+  await ensureHomepageSectionsOrderColumn();
   if (data.hero_template !== undefined) {
     await sql`UPDATE "HomepageSetting" SET hero_template = ${data.hero_template}, updated_at = NOW() WHERE id = 'default'`;
   }
@@ -2251,6 +2271,10 @@ export async function updateHomepageSettings(data: {
     await ensureHomepagePlatformNewsColumns();
     await sql`UPDATE "HomepageSetting" SET platform_news_section_title = ${data.platform_news_section_title}, updated_at = NOW() WHERE id = 'default'`;
   }
+  if (data.homepage_sections_order !== undefined) {
+    await ensureHomepageSectionsOrderColumn();
+    await sql`UPDATE "HomepageSetting" SET homepage_sections_order = ${data.homepage_sections_order}, updated_at = NOW() WHERE id = 'default'`;
+  }
   if (data.add_balance_title !== undefined) {
     await sql`UPDATE "HomepageSetting" SET add_balance_title = ${data.add_balance_title}, updated_at = NOW() WHERE id = 'default'`;
   }
@@ -2434,6 +2458,24 @@ export async function listStoreProductsPublic(): Promise<StoreProductRow[]> {
     return (rows as Record<string, unknown>[]).map(mapStoreProduct);
   } catch {
     return [];
+  }
+}
+
+export async function getStoreProductPublicById(productId: string): Promise<StoreProductRow | null> {
+  try {
+    await ensureStoreProductsSchema();
+    const pid = String(productId ?? "").trim();
+    if (!pid) return null;
+    const rows = await sql`
+      SELECT id, title, description, price, image_url, pdf_url, is_active, sort_order, created_at
+      FROM "StoreProduct"
+      WHERE id = ${pid} AND is_active = true
+      LIMIT 1
+    `;
+    const row = (rows[0] as Record<string, unknown> | undefined) ?? null;
+    return row ? mapStoreProduct(row) : null;
+  } catch {
+    return null;
   }
 }
 

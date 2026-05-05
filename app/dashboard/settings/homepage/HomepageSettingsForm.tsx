@@ -5,11 +5,16 @@ import { useRouter } from "next/navigation";
 import type {
   HomepageSetting,
   HeroBgPreset,
+  HomepageBelowFoldSectionKey,
   PlatformDetailsItem,
   PlatformDetailsPresetIcon,
   PlatformNewsItem,
 } from "@/lib/types";
 import { HERO_BG_PRESET_GRADIENTS, normalizeHeroHex } from "@/lib/hero-bg";
+import {
+  HOMEPAGE_BELOW_FOLD_SECTION_ORDER_DEFAULT,
+  normalizeHomepageBelowFoldSectionsOrder,
+} from "@/lib/homepage-sections";
 import {
   DEFAULT_PLATFORM_DETAILS_ITEMS,
   PLATFORM_DETAILS_PRESET_ICON_OPTIONS,
@@ -66,6 +71,17 @@ const SLIDER_IMAGE_FIELDS: Array<{
   { idx: 4, key: "heroSliderImage4", courseIdKey: "heroSliderCourseId4" },
   { idx: 5, key: "heroSliderImage5", courseIdKey: "heroSliderCourseId5" },
 ];
+
+const HOMEPAGE_SECTION_ORDER_LABELS: Record<HomepageBelowFoldSectionKey, string> = {
+  platformDetails: "تفاصيل المنصة",
+  teachers: "المدرّسون",
+  subscriptions: "الاشتراكات",
+  categories: "أقسام المنصة",
+  store: "المتجر",
+  reviews: "تعليقات العملاء",
+  news: "الأخبار",
+  cta: "قسم الانطلاقة التعليمية",
+};
 
 function initialHeroBgCustom(settings: HomepageSetting): {
   useCustom: boolean;
@@ -188,6 +204,9 @@ export function HomepageSettingsForm({
     parsePlatformNewsItems(initialSettings.platformNewsItems),
   );
   const [platformNewsUploading, setPlatformNewsUploading] = useState<string | null>(null);
+  const [homepageSectionsOrder, setHomepageSectionsOrder] = useState<HomepageBelowFoldSectionKey[]>(
+    normalizeHomepageBelowFoldSectionsOrder(initialSettings.homepageSectionsOrder),
+  );
 
   useEffect(() => {
     if (!success) return;
@@ -219,6 +238,12 @@ export function HomepageSettingsForm({
   }, [initialSettings.platformNewsItems]);
 
   useEffect(() => {
+    setHomepageSectionsOrder(
+      normalizeHomepageBelowFoldSectionsOrder(initialSettings.homepageSectionsOrder),
+    );
+  }, [initialSettings.homepageSectionsOrder]);
+
+  useEffect(() => {
     setForm((f) => ({
       ...f,
       platformNewsSectionTitle: initialSettings.platformNewsSectionTitle ?? "",
@@ -241,6 +266,35 @@ export function HomepageSettingsForm({
     initialSettings.heroSliderCourseId4,
     initialSettings.heroSliderCourseId5,
   ]);
+
+  const publishedCourseIdSet = new Set(publishedCourses.map((c) => c.id));
+  const normalizeSliderCourseIdForSubmit = (val: string) => {
+    const trimmed = val.trim();
+    if (!trimmed) return null;
+    return publishedCourseIdSet.has(trimmed) ? trimmed : null;
+  };
+  const moveHomepageSection = (fromIndex: number, toIndex: number) => {
+    setHomepageSectionsOrder((prev) => {
+      if (
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= prev.length ||
+        toIndex >= prev.length ||
+        fromIndex === toIndex
+      ) {
+        return prev;
+      }
+      const next = [...prev];
+      const [item] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, item);
+      return normalizeHomepageBelowFoldSectionsOrder(next);
+    });
+  };
+  const normalizedHomepageSectionsOrder = normalizeHomepageBelowFoldSectionsOrder(
+    homepageSectionsOrder.length > 0
+      ? homepageSectionsOrder
+      : HOMEPAGE_BELOW_FOLD_SECTION_ORDER_DEFAULT,
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -332,11 +386,11 @@ export function HomepageSettingsForm({
           heroSliderImage3: form.heroSliderImage3.trim() || null,
           heroSliderImage4: form.heroSliderImage4.trim() || null,
           heroSliderImage5: form.heroSliderImage5.trim() || null,
-          heroSliderCourseId1: form.heroSliderCourseId1.trim() || null,
-          heroSliderCourseId2: form.heroSliderCourseId2.trim() || null,
-          heroSliderCourseId3: form.heroSliderCourseId3.trim() || null,
-          heroSliderCourseId4: form.heroSliderCourseId4.trim() || null,
-          heroSliderCourseId5: form.heroSliderCourseId5.trim() || null,
+          heroSliderCourseId1: normalizeSliderCourseIdForSubmit(form.heroSliderCourseId1),
+          heroSliderCourseId2: normalizeSliderCourseIdForSubmit(form.heroSliderCourseId2),
+          heroSliderCourseId3: normalizeSliderCourseIdForSubmit(form.heroSliderCourseId3),
+          heroSliderCourseId4: normalizeSliderCourseIdForSubmit(form.heroSliderCourseId4),
+          heroSliderCourseId5: normalizeSliderCourseIdForSubmit(form.heroSliderCourseId5),
           heroSliderIntervalSeconds: Math.round(intervalSecondsRaw),
           hero3Title: form.hero3Title.trim() || null,
           hero3Subtitle: form.hero3Subtitle.trim() || null,
@@ -364,6 +418,7 @@ export function HomepageSettingsForm({
           platformDetailsItems,
           platformNewsEnabled: form.platformNewsEnabled,
           platformNewsSectionTitle: form.platformNewsSectionTitle.trim() || null,
+          homepageSectionsOrder: normalizedHomepageSectionsOrder,
           platformNewsItems: platformNewsItems.filter(
             (item) => item.imageUrl.trim() && item.description.trim(),
           ),
@@ -1663,6 +1718,45 @@ export function HomepageSettingsForm({
           >
             إضافة خبر {canAddPlatformNewsItem ? `(${platformNewsItems.length}/${PLATFORM_NEWS_MAX_ITEMS})` : ""}
           </button>
+        </div>
+      </div>
+
+      <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+        <h3 className="mb-2 text-lg font-semibold text-[var(--color-foreground)]">
+          ترتيب أقسام الصفحة الرئيسية (أسفل الهيرو)
+        </h3>
+        <p className="mb-4 text-sm text-[var(--color-muted)]">
+          استخدم الأسهم لتحريك القسم لأعلى أو لأسفل. الترتيب هنا يحدد الظهور الفعلي في الصفحة الرئيسية.
+        </p>
+        <div className="space-y-2">
+          {normalizedHomepageSectionsOrder.map((sectionKey, index) => (
+            <div
+              key={sectionKey}
+              className="flex items-center justify-between gap-3 rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            >
+              <span className="text-sm font-medium text-[var(--color-foreground)]">
+                {index + 1}. {HOMEPAGE_SECTION_ORDER_LABELS[sectionKey]}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => moveHomepageSection(index, index - 1)}
+                  disabled={index === 0}
+                  className="rounded border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-foreground)] disabled:opacity-40"
+                >
+                  لأعلى
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveHomepageSection(index, index + 1)}
+                  disabled={index === normalizedHomepageSectionsOrder.length - 1}
+                  className="rounded border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-foreground)] disabled:opacity-40"
+                >
+                  لأسفل
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

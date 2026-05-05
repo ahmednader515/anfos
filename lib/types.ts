@@ -111,6 +111,17 @@ export interface PlatformNewsItem {
   description: string;
 }
 
+/** ترتيب أقسام الصفحة الرئيسية أسفل الهيرو */
+export type HomepageBelowFoldSectionKey =
+  | "platformDetails"
+  | "teachers"
+  | "subscriptions"
+  | "categories"
+  | "store"
+  | "reviews"
+  | "news"
+  | "cta";
+
 export interface HomepageSetting {
   /** القالب العام لهيرو الصفحة الرئيسية */
   heroTemplate?: "classic" | "image_slider" | "coming_soon" | string | null;
@@ -213,6 +224,8 @@ export interface HomepageSetting {
   platformNewsItems?: string | null;
   /** عنوان قسم الأخبار في الصفحة الرئيسية */
   platformNewsSectionTitle?: string | null;
+  /** ترتيب أقسام الصفحة الرئيسية أسفل الهيرو (JSON: HomepageBelowFoldSectionKey[]) */
+  homepageSectionsOrder?: string | null;
   /** عنوان صفحة إضافة الرصيد للعميل */
   addBalanceTitle?: string | null;
   /** وصف أعلى صفحة إضافة الرصيد */

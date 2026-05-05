@@ -62,9 +62,15 @@ export function StoreBrowseClient({
         <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {filtered.map((p) => (
             <article key={p.id} className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)]">
-              {p.imageUrl ? <img src={p.imageUrl} alt={p.title} className="h-44 w-full object-cover" /> : <div className="h-44 bg-[var(--color-primary)]/10" />}
+              <Link href={`/store/${encodeURIComponent(p.id)}`} className="block">
+                {p.imageUrl ? <img src={p.imageUrl} alt={p.title} className="h-44 w-full object-cover" /> : <div className="h-44 bg-[var(--color-primary)]/10" />}
+              </Link>
               <div className="p-5">
-                <h3 className="text-lg font-semibold text-[var(--color-foreground)]">{p.title}</h3>
+                <h3 className="text-lg font-semibold text-[var(--color-foreground)]">
+                  <Link href={`/store/${encodeURIComponent(p.id)}`} className="hover:text-[var(--color-primary)]">
+                    {p.title}
+                  </Link>
+                </h3>
                 <p className="mt-2 line-clamp-3 text-sm text-[var(--color-muted)]">{p.description}</p>
                 <div className="mt-4 flex flex-col gap-3">
                   {(() => {
@@ -89,6 +95,12 @@ export function StoreBrowseClient({
                         </div>
 
                         <div>
+                          <Link
+                            href={`/store/${encodeURIComponent(p.id)}`}
+                            className="mb-2 block w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] px-3 py-2 text-center text-xs font-medium text-[var(--color-foreground)] hover:bg-[var(--color-border)]/30"
+                          >
+                            عرض التفاصيل
+                          </Link>
                           {canDownload ? (
                             <a
                               href={p.pdfUrl ?? undefined}

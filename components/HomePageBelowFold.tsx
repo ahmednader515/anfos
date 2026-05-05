@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import type { Session } from "next-auth";
 import {
@@ -20,6 +21,7 @@ import { parsePlatformNewsItems } from "@/lib/platform-news";
 import { HomePlatformNewsSlider } from "@/components/HomePlatformNewsSlider";
 import { RevealOnScroll } from "@/components/RevealOnScroll";
 import { BrowseImageCard } from "@/components/BrowseImageCard";
+import { normalizeHomepageBelowFoldSectionsOrder } from "@/lib/homepage-sections";
 
 export async function HomePageBelowFold({
   homepageSettings,
@@ -99,184 +101,211 @@ export async function HomePageBelowFold({
       : [];
 
   const platformDetailsItems = parsePlatformDetailsItems(homepageSettings.platformDetailsItems);
+  const orderedSectionKeys = normalizeHomepageBelowFoldSectionsOrder(
+    homepageSettings.homepageSectionsOrder,
+  );
+
+  const renderBelowFoldSection = (sectionKey: string) => {
+    switch (sectionKey) {
+      case "platformDetails":
+        return homepageSettings.platformDetailsEnabled && platformDetailsItems.length > 0 ? (
+          <RevealOnScroll>
+            <HomePlatformDetailsSection
+              title={homepageSettings.platformDetailsTitle?.trim() || "“قلم” الحل المثالي!"}
+              subtitle={homepageSettings.platformDetailsSubtitle?.trim() || null}
+              backgroundColor={homepageSettings.platformDetailsBackgroundColor?.trim() || null}
+              items={platformDetailsItems}
+            />
+          </RevealOnScroll>
+        ) : null;
+      case "teachers":
+        return homepageSettings.teachersEnabled ? (
+          <RevealOnScroll delayMs={50}>
+            <HomeTeachersSection enabled initialTeachers={teachersHomePreview} />
+          </RevealOnScroll>
+        ) : null;
+      case "subscriptions":
+        return homepageSettings.subscriptionsEnabled ? (
+          <RevealOnScroll delayMs={80}>
+            <HomeSubscriptionsSection
+              enabled
+              plans={subscriptionPlansHome}
+              isStudent={session?.user?.role === "STUDENT"}
+              isLoggedIn={!!session}
+              studentPlatformSubscription={studentPlatformSubscription}
+            />
+          </RevealOnScroll>
+        ) : null;
+      case "categories":
+        return categories.length > 0 ? (
+          <RevealOnScroll>
+            <section className="mx-auto min-w-0 max-w-6xl bg-white px-3 py-16 dark:bg-[var(--color-background)] sm:px-6">
+              <h2 className="text-center text-2xl font-extrabold text-[var(--color-foreground)] sm:text-3xl">
+                اقسام المنصة
+              </h2>
+              <p className="mt-2 text-center text-sm text-[var(--color-muted)] sm:text-base">
+                اختر القسم المناسب لك ثم تصفّح الأقسام الفرعية والدورات داخله
+              </p>
+
+              <div className="mt-8 grid w-full min-w-0 gap-2 [grid-template-columns:repeat(2,minmax(0,1fr))] sm:gap-4 lg:[grid-template-columns:repeat(4,minmax(0,1fr))]">
+                {categories.map((cat) => {
+                  const title =
+                    String((cat as { nameAr?: unknown }).nameAr ?? (cat as { name_ar?: unknown }).name_ar ?? cat.name ?? "").trim();
+                  const slug = String(cat.slug ?? "").trim();
+                  const img =
+                    (cat as { imageUrl?: string | null }).imageUrl ??
+                    (cat as { image_url?: string | null }).image_url ??
+                    null;
+                  const subtitle =
+                    String((cat as { description?: unknown }).description ?? "").trim() || null;
+                  const href = slug ? `/categories/${encodeURIComponent(slug)}` : "/courses";
+                  return (
+                    <BrowseImageCard
+                      key={String(cat.id ?? slug ?? title)}
+                      href={href}
+                      title={title || "قسم"}
+                      imageUrl={img}
+                      subtitle={subtitle}
+                    />
+                  );
+                })}
+              </div>
+            </section>
+          </RevealOnScroll>
+        ) : null;
+      case "store":
+        return homepageSettings.storeEnabled && storeProductsHome.length > 0 ? (
+          <RevealOnScroll>
+            <HomeStoreSection
+              productsCount={storeProductsHome.length}
+              sectionTitle={homepageSettings.storeSectionTitle?.trim() || "متجر المنصة"}
+              sectionDescription={
+                homepageSettings.storeSectionDescription?.trim() ||
+                "مرحبًا بك في متجر المنصة الذي يضم ملازم وكتب في غاية الأهمية. اختر ما يناسبك من المواد الرقمية التعليمية واستفد من محتوى مُنظّم يدعم رحلتك الدراسية."
+              }
+            />
+          </RevealOnScroll>
+        ) : null;
+      case "reviews":
+        return (
+          <RevealOnScroll>
+            <section className="reviews-section border-t border-[var(--color-border)] bg-[var(--color-reviews-bg)] px-4 py-16 sm:px-6">
+              <div className="mx-auto max-w-6xl">
+              <h2 className="text-2xl font-bold text-[var(--color-foreground)]">
+                {homepageSettings.reviewsSectionTitle?.trim() || "ماذا يقول العملاء"}
+              </h2>
+              <p className="mt-1 text-[var(--color-muted)]">
+                {homepageSettings.reviewsSectionSubtitle?.trim() || "تجارب حقيقية من عملاء المنصة"}
+              </p>
+              {reviews.length > 0 ? (
+                <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {reviews.map((r) => {
+                    const letter =
+                      (r.avatarLetter && r.avatarLetter.trim()) || (r.authorName.trim()[0] ?? "؟");
+                    return (
+                      <div
+                        key={r.id}
+                        className="flex gap-4 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]"
+                      >
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--color-reviews-avatar)] text-lg font-semibold text-[var(--color-muted)]">
+                          {letter}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-[var(--color-primary)]">{r.authorName}</p>
+                          {r.authorTitle ? (
+                            <p className="mt-0.5 text-xs text-[var(--color-muted)]">{r.authorTitle}</p>
+                          ) : null}
+                          <p className="mt-3 text-[var(--color-foreground)]">{r.text}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="mt-10 text-center text-[var(--color-muted)]">لا توجد تعليقات حتى الآن.</p>
+              )}
+              </div>
+            </section>
+          </RevealOnScroll>
+        );
+      case "news":
+        return showPlatformNewsSection ? (
+          <RevealOnScroll>
+            <section className="border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-12 sm:px-6">
+              <div className="mx-auto max-w-6xl">
+              <h2 className="mb-6 text-2xl font-bold text-[var(--color-foreground)]">
+                {homepageSettings.platformNewsSectionTitle?.trim() || "أخبار المنصة"}
+              </h2>
+              <HomePlatformNewsSlider items={platformNewsSlides} />
+              </div>
+            </section>
+          </RevealOnScroll>
+        ) : null;
+      case "cta":
+        return (
+          <RevealOnScroll>
+            <section className="border-t border-[var(--color-border)] bg-[var(--color-surface)]">
+              <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+                <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] p-8 sm:p-12">
+                  <div className="text-center">
+                  <p className="inline-flex items-center rounded-full border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 px-4 py-1 text-xs font-semibold text-[var(--color-primary)] sm:text-sm">
+                    {homepageSettings.ctaBadgeText?.trim() || "انطلاقة تعليمية أقوى"}
+                  </p>
+                  <h2 className="mt-4 text-3xl font-extrabold text-[var(--color-foreground)] sm:text-4xl">
+                    {homepageSettings.ctaTitle?.trim() || "جاهز تحوّل حلمك لنتيجة حقيقية؟"}
+                  </h2>
+                  <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[var(--color-muted)] sm:text-base">
+                    {homepageSettings.ctaDescription?.trim() ||
+                      "ابدأ الآن بخطوة واثقة: محتوى منظم، شرح واضح، وتمارين عملية تساعدك تثبّت المعلومة بسرعة. كل درس تقطعه اليوم يقرّبك من مستواك اللي تستحقه بكرة."}
+                  </p>
+
+                  <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                    <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)]/70 px-3 py-1 text-xs text-[var(--color-muted)]">
+                      شرح مبسّط
+                    </span>
+                    <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)]/70 px-3 py-1 text-xs text-[var(--color-muted)]">
+                      متابعة مستمرة
+                    </span>
+                    <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)]/70 px-3 py-1 text-xs text-[var(--color-muted)]">
+                      نتائج ملموسة
+                    </span>
+                  </div>
+
+                  <Link
+                    href="/#home-next-section"
+                    className="mt-8 inline-flex items-center justify-center rounded-[var(--radius-btn)] bg-[var(--color-primary)] px-8 py-3 text-base font-bold text-white transition hover:scale-[1.02] hover:bg-[var(--color-primary-hover)]"
+                  >
+                    {homepageSettings.ctaButtonText?.trim() || "ابدأ رحلتك الآن"}
+                  </Link>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </RevealOnScroll>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <>
-      {homepageSettings.platformDetailsEnabled && platformDetailsItems.length > 0 ? (
-        <RevealOnScroll>
-          <HomePlatformDetailsSection
-            title={homepageSettings.platformDetailsTitle?.trim() || "“قلم” الحل المثالي!"}
-            subtitle={homepageSettings.platformDetailsSubtitle?.trim() || null}
-            backgroundColor={homepageSettings.platformDetailsBackgroundColor?.trim() || null}
-            items={platformDetailsItems}
-          />
-        </RevealOnScroll>
-      ) : null}
-
-      {homepageSettings.teachersEnabled ? (
-        <RevealOnScroll delayMs={50}>
-          <HomeTeachersSection enabled initialTeachers={teachersHomePreview} />
-        </RevealOnScroll>
-      ) : null}
-
-      {homepageSettings.teachersEnabled && homepageSettings.subscriptionsEnabled ? (
-        <div className="h-12 sm:h-16 md:h-24" aria-hidden />
-      ) : null}
-
-      {homepageSettings.subscriptionsEnabled ? (
-        <RevealOnScroll delayMs={80}>
-          <HomeSubscriptionsSection
-            enabled
-            plans={subscriptionPlansHome}
-            isStudent={session?.user?.role === "STUDENT"}
-            isLoggedIn={!!session}
-            studentPlatformSubscription={studentPlatformSubscription}
-          />
-        </RevealOnScroll>
-      ) : null}
-
-      {categories.length > 0 ? (
-        <RevealOnScroll>
-          <section className="mx-auto min-w-0 max-w-6xl bg-white px-3 py-16 dark:bg-[var(--color-background)] sm:px-6">
-            <h2 className="text-center text-2xl font-extrabold text-[var(--color-foreground)] sm:text-3xl">
-              اقسام المنصة
-            </h2>
-            <p className="mt-2 text-center text-sm text-[var(--color-muted)] sm:text-base">
-              اختر القسم المناسب لك ثم تصفّح الأقسام الفرعية والدورات داخله
-            </p>
-
-            <div className="mt-8 grid w-full min-w-0 gap-2 [grid-template-columns:repeat(2,minmax(0,1fr))] sm:gap-4 lg:[grid-template-columns:repeat(4,minmax(0,1fr))]">
-              {categories.map((cat) => {
-                const title =
-                  String((cat as { nameAr?: unknown }).nameAr ?? (cat as { name_ar?: unknown }).name_ar ?? cat.name ?? "").trim();
-                const slug = String(cat.slug ?? "").trim();
-                const img =
-                  (cat as { imageUrl?: string | null }).imageUrl ??
-                  (cat as { image_url?: string | null }).image_url ??
-                  null;
-                const subtitle =
-                  String((cat as { description?: unknown }).description ?? "").trim() || null;
-                const href = slug ? `/categories/${encodeURIComponent(slug)}` : "/courses";
-                return (
-                  <BrowseImageCard
-                    key={String(cat.id ?? slug ?? title)}
-                    href={href}
-                    title={title || "قسم"}
-                    imageUrl={img}
-                    subtitle={subtitle}
-                  />
-                );
-              })}
-            </div>
-          </section>
-        </RevealOnScroll>
-      ) : null}
-
-      {homepageSettings.storeEnabled && storeProductsHome.length > 0 ? (
-        <RevealOnScroll>
-          <HomeStoreSection
-            productsCount={storeProductsHome.length}
-            sectionTitle={homepageSettings.storeSectionTitle?.trim() || "متجر المنصة"}
-            sectionDescription={
-              homepageSettings.storeSectionDescription?.trim() ||
-              "مرحبًا بك في متجر المنصة الذي يضم ملازم وكتب في غاية الأهمية. اختر ما يناسبك من المواد الرقمية التعليمية واستفد من محتوى مُنظّم يدعم رحلتك الدراسية."
-            }
-          />
-        </RevealOnScroll>
-      ) : null}
-
-      <RevealOnScroll>
-        <section className="reviews-section border-t border-[var(--color-border)] bg-[var(--color-reviews-bg)] px-4 py-16 sm:px-6">
-          <div className="mx-auto max-w-6xl">
-          <h2 className="text-2xl font-bold text-[var(--color-foreground)]">
-            {homepageSettings.reviewsSectionTitle?.trim() || "ماذا يقول العملاء"}
-          </h2>
-          <p className="mt-1 text-[var(--color-muted)]">
-            {homepageSettings.reviewsSectionSubtitle?.trim() || "تجارب حقيقية من عملاء المنصة"}
-          </p>
-          {reviews.length > 0 ? (
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {reviews.map((r) => {
-                const letter =
-                  (r.avatarLetter && r.avatarLetter.trim()) || (r.authorName.trim()[0] ?? "؟");
-                return (
-                  <div
-                    key={r.id}
-                    className="flex gap-4 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)]"
-                  >
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--color-reviews-avatar)] text-lg font-semibold text-[var(--color-muted)]">
-                      {letter}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-[var(--color-primary)]">{r.authorName}</p>
-                      {r.authorTitle ? (
-                        <p className="mt-0.5 text-xs text-[var(--color-muted)]">{r.authorTitle}</p>
-                      ) : null}
-                      <p className="mt-3 text-[var(--color-foreground)]">{r.text}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="mt-10 text-center text-[var(--color-muted)]">لا توجد تعليقات حتى الآن.</p>
-          )}
-          </div>
-        </section>
-      </RevealOnScroll>
-
-      {showPlatformNewsSection ? (
-        <RevealOnScroll>
-          <section className="border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-12 sm:px-6">
-            <div className="mx-auto max-w-6xl">
-            <h2 className="mb-6 text-2xl font-bold text-[var(--color-foreground)]">
-              {homepageSettings.platformNewsSectionTitle?.trim() || "أخبار المنصة"}
-            </h2>
-            <HomePlatformNewsSlider items={platformNewsSlides} />
-            </div>
-          </section>
-        </RevealOnScroll>
-      ) : null}
-
-      <RevealOnScroll>
-        <section className="border-t border-[var(--color-border)] bg-[var(--color-surface)]">
-          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-            <div className="rounded-[var(--radius-card)] bg-[var(--color-surface)] p-8 sm:p-12">
-              <div className="text-center">
-              <p className="inline-flex items-center rounded-full border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 px-4 py-1 text-xs font-semibold text-[var(--color-primary)] sm:text-sm">
-                {homepageSettings.ctaBadgeText?.trim() || "انطلاقة تعليمية أقوى"}
-              </p>
-              <h2 className="mt-4 text-3xl font-extrabold text-[var(--color-foreground)] sm:text-4xl">
-                {homepageSettings.ctaTitle?.trim() || "جاهز تحوّل حلمك لنتيجة حقيقية؟"}
-              </h2>
-              <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[var(--color-muted)] sm:text-base">
-                {homepageSettings.ctaDescription?.trim() ||
-                  "ابدأ الآن بخطوة واثقة: محتوى منظم، شرح واضح، وتمارين عملية تساعدك تثبّت المعلومة بسرعة. كل درس تقطعه اليوم يقرّبك من مستواك اللي تستحقه بكرة."}
-              </p>
-
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-                <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)]/70 px-3 py-1 text-xs text-[var(--color-muted)]">
-                  شرح مبسّط
-                </span>
-                <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)]/70 px-3 py-1 text-xs text-[var(--color-muted)]">
-                  متابعة مستمرة
-                </span>
-                <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)]/70 px-3 py-1 text-xs text-[var(--color-muted)]">
-                  نتائج ملموسة
-                </span>
-              </div>
-
-              <Link
-                href="/#home-next-section"
-                className="mt-8 inline-flex items-center justify-center rounded-[var(--radius-btn)] bg-[var(--color-primary)] px-8 py-3 text-base font-bold text-white transition hover:scale-[1.02] hover:bg-[var(--color-primary-hover)]"
-              >
-                {homepageSettings.ctaButtonText?.trim() || "ابدأ رحلتك الآن"}
-              </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-      </RevealOnScroll>
+      {orderedSectionKeys.map((sectionKey, index) => {
+        const node = renderBelowFoldSection(sectionKey);
+        if (!node) return null;
+        const previousKey = orderedSectionKeys[index - 1];
+        const shouldInsertTeachersSubsSpacer =
+          sectionKey === "subscriptions" &&
+          previousKey === "teachers" &&
+          homepageSettings.teachersEnabled &&
+          homepageSettings.subscriptionsEnabled;
+        return (
+          <Fragment key={sectionKey}>
+            {shouldInsertTeachersSubsSpacer ? <div className="h-12 sm:h-16 md:h-24" aria-hidden /> : null}
+            {node}
+          </Fragment>
+        );
+      })}
 
       {homepageSettings.youtubeUrl?.trim() ||
       homepageSettings.facebookUrl?.trim() ||

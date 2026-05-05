@@ -38,7 +38,7 @@ export function BrowseImageCard({
       </div>
 
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-emerald-900/90 via-emerald-900/45 to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/80 via-black/35 to-transparent"
         aria-hidden
       />
 

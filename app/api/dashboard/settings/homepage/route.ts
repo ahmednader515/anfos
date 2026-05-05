@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { getCourseById, getHomepageSettings, updateHomepageSettings } from "@/lib/db";
 import { normalizeHeroHex } from "@/lib/hero-bg";
 import type { PlatformDetailsItem, PlatformDetailsPresetIcon, PlatformNewsItem } from "@/lib/types";
+import { serializeHomepageBelowFoldSectionsOrder } from "@/lib/homepage-sections";
 import { PLATFORM_DETAILS_PRESET_ICON_OPTIONS } from "@/lib/platform-details";
 import { PLATFORM_NEWS_MAX_ITEMS } from "@/lib/platform-news";
 const PLATFORM_DETAILS_PRESET_ICONS = PLATFORM_DETAILS_PRESET_ICON_OPTIONS.map(
@@ -88,6 +89,7 @@ export async function PUT(request: NextRequest) {
     platformNewsEnabled?: boolean;
     platformNewsItems?: unknown;
     platformNewsSectionTitle?: string | null;
+    homepageSectionsOrder?: unknown;
   };
   try {
     body = await request.json();
@@ -124,20 +126,24 @@ export async function PUT(request: NextRequest) {
     return s ? s.slice(0, 128) : null;
   }
 
-  async function assertPublishedCourseOr400(courseId: string): Promise<NextResponse | null> {
+  async function normalizeAndValidateSliderCourseId(
+    courseId: string,
+  ): Promise<{ courseId: string | null; errorResponse: NextResponse | null }> {
     const course = await getCourseById(courseId);
-    if (!course) {
-      return NextResponse.json({ error: "أحد معرفات الكورس المرتبطة بالسلايدر غير موجود" }, { status: 400 });
-    }
+    // لو الكورس محذوف/غير موجود: نفك الربط بدلاً من منع حفظ أي تغييرات أخرى (مثل الأخبار).
+    if (!course) return { courseId: null, errorResponse: null };
     const row = course as unknown as Record<string, unknown>;
     const pub = Boolean(row.isPublished ?? row.is_published);
     if (!pub) {
-      return NextResponse.json(
-        { error: "يمكن ربط السلايدر بكورسات منشورة فقط. ألغِ الربط أو انشر الكورس أولاً." },
-        { status: 400 },
-      );
+      return {
+        courseId: null,
+        errorResponse: NextResponse.json(
+          { error: "يمكن ربط السلايدر بكورسات منشورة فقط. ألغِ الربط أو انشر الكورس أولاً." },
+          { status: 400 },
+        ),
+      };
     }
-    return null;
+    return { courseId, errorResponse: null };
   }
 
   let hero_slider_interval_ms: number | null | undefined;
@@ -337,6 +343,17 @@ export async function PUT(request: NextRequest) {
     }
   }
 
+  let homepage_sections_order: string | null | undefined;
+  if (body.homepageSectionsOrder !== undefined) {
+    if (body.homepageSectionsOrder === null) {
+      homepage_sections_order = serializeHomepageBelowFoldSectionsOrder(null);
+    } else if (!Array.isArray(body.homepageSectionsOrder)) {
+      return NextResponse.json({ error: "ترتيب أقسام الصفحة الرئيسية غير صالح" }, { status: 400 });
+    } else {
+      homepage_sections_order = serializeHomepageBelowFoldSectionsOrder(body.homepageSectionsOrder);
+    }
+  }
+
   const normalizeFooterPhone = (input: unknown): string | null => {
     const s = input != null ? String(input).trim() : "";
     return s ? s.slice(0, 64) : null;
@@ -354,36 +371,46 @@ export async function PUT(request: NextRequest) {
   if (body.heroSliderCourseId1 !== undefined) {
     hero_slider_course_id_1 = normalizeSliderCourseId(body.heroSliderCourseId1);
     if (hero_slider_course_id_1) {
-      const bad = await assertPublishedCourseOr400(hero_slider_course_id_1);
-      if (bad) return bad;
+      const { courseId, errorResponse } =
+        await normalizeAndValidateSliderCourseId(hero_slider_course_id_1);
+      if (errorResponse) return errorResponse;
+      hero_slider_course_id_1 = courseId;
     }
   }
   if (body.heroSliderCourseId2 !== undefined) {
     hero_slider_course_id_2 = normalizeSliderCourseId(body.heroSliderCourseId2);
     if (hero_slider_course_id_2) {
-      const bad = await assertPublishedCourseOr400(hero_slider_course_id_2);
-      if (bad) return bad;
+      const { courseId, errorResponse } =
+        await normalizeAndValidateSliderCourseId(hero_slider_course_id_2);
+      if (errorResponse) return errorResponse;
+      hero_slider_course_id_2 = courseId;
     }
   }
   if (body.heroSliderCourseId3 !== undefined) {
     hero_slider_course_id_3 = normalizeSliderCourseId(body.heroSliderCourseId3);
     if (hero_slider_course_id_3) {
-      const bad = await assertPublishedCourseOr400(hero_slider_course_id_3);
-      if (bad) return bad;
+      const { courseId, errorResponse } =
+        await normalizeAndValidateSliderCourseId(hero_slider_course_id_3);
+      if (errorResponse) return errorResponse;
+      hero_slider_course_id_3 = courseId;
     }
   }
   if (body.heroSliderCourseId4 !== undefined) {
     hero_slider_course_id_4 = normalizeSliderCourseId(body.heroSliderCourseId4);
     if (hero_slider_course_id_4) {
-      const bad = await assertPublishedCourseOr400(hero_slider_course_id_4);
-      if (bad) return bad;
+      const { courseId, errorResponse } =
+        await normalizeAndValidateSliderCourseId(hero_slider_course_id_4);
+      if (errorResponse) return errorResponse;
+      hero_slider_course_id_4 = courseId;
     }
   }
   if (body.heroSliderCourseId5 !== undefined) {
     hero_slider_course_id_5 = normalizeSliderCourseId(body.heroSliderCourseId5);
     if (hero_slider_course_id_5) {
-      const bad = await assertPublishedCourseOr400(hero_slider_course_id_5);
-      if (bad) return bad;
+      const { courseId, errorResponse } =
+        await normalizeAndValidateSliderCourseId(hero_slider_course_id_5);
+      if (errorResponse) return errorResponse;
+      hero_slider_course_id_5 = courseId;
     }
   }
 
@@ -527,6 +554,7 @@ export async function PUT(request: NextRequest) {
       platform_news_enabled,
       platform_news_items,
       platform_news_section_title,
+      homepage_sections_order,
     });
     return NextResponse.json({ success: true });
   } catch (error) {
